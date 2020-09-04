@@ -9,6 +9,7 @@ import (
 
 	"github.com/creachadair/atomicfile"
 	"github.com/creachadair/twitter"
+	"github.com/creachadair/twitter/auth"
 	"github.com/creachadair/twitter/jhttp"
 	yaml "gopkg.in/yaml.v3"
 )
@@ -24,7 +25,9 @@ type Config struct {
 
 	Users []*User `yaml:"users,omitempty"`
 
+	// Non-persistent fields.
 	filePath string
+	Log      func(tag, msg string) `yaml:"-"`
 }
 
 // User carries an access token for an individual user.
@@ -34,15 +37,29 @@ type User struct {
 	Secret   string `yaml:"access_secret"`
 }
 
-// NewClient returns a new Twitter client with a bearer token.
-func (c *Config) NewClient() (*twitter.Client, error) {
+// NewBearerClient returns a new Twitter client with a bearer token.
+func (c *Config) NewBearerClient() (*twitter.Client, error) {
 	if c.BearerToken == "" {
 		return nil, errors.New("no bearer token is available")
 	}
-	cli := twitter.NewClient(&twitter.ClientOpts{
+	return twitter.NewClient(&twitter.ClientOpts{
 		Authorize: jhttp.BearerTokenAuthorizer(c.BearerToken),
-	})
-	return cli, nil
+		Log:       c.Log,
+	}), nil
+}
+
+// NewUserClient returns a new Twitter client with an access token for the
+// specified username.
+func (c *Config) NewUserClient(user string) (*twitter.Client, error) {
+	u := c.FindUsername(user)
+	if u == nil {
+		return nil, fmt.Errorf("no access token foundfor user %q", user)
+	}
+	cfg := auth.Config{APIKey: c.APIKey, APISecret: c.APISecret}
+	return twitter.NewClient(&twitter.ClientOpts{
+		Authorize: cfg.Authorizer(u.Token, u.Secret),
+		Log:       c.Log,
+	}), nil
 }
 
 // FindUsername returns the access token for the given username, or nil.

@@ -23,7 +23,7 @@ var Command = &command.C{
 			fmt.Fprintln(ctx, "Error: no usernames or IDs were specified")
 			return command.FailWithUsage(ctx, args)
 		}
-		cli, err := ctx.Config.(*config.Config).NewClient()
+		cli, err := ctx.Config.(*config.Config).NewBearerClient()
 		if err != nil {
 			return fmt.Errorf("creating client: %w", err)
 		}
