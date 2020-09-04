@@ -17,19 +17,19 @@ type HelpInfo struct {
 }
 
 // WriteUsage writes a usage summary to w.
-func (h HelpInfo) WriteUsage(w io.Writer) { fmt.Fprintln(w, h.Usage) }
+func (h HelpInfo) WriteUsage(w io.Writer) { fmt.Fprint(w, h.Usage, "\n\n") }
 
 // WriteSynopsis writes a usage summary and command synopsis to w.
 // If the command defines flags, the flag summary is also written.
 func (h HelpInfo) WriteSynopsis(w io.Writer) {
 	h.WriteUsage(w)
 	if h.Synopsis == "" {
-		fmt.Fprintln(w, "\n(no description available)")
+		fmt.Fprint(w, "(no description available)\n\n")
 	} else {
-		fmt.Fprintln(w, indent("\t", "\t", h.Synopsis))
+		fmt.Fprint(w, h.Synopsis+"\n\n")
 	}
 	if h.Flags != "" {
-		fmt.Fprint(w, "\n", h.Flags, "\n")
+		fmt.Fprint(w, h.Flags, "\n\n")
 	}
 }
 
@@ -38,17 +38,16 @@ func (h HelpInfo) WriteSynopsis(w io.Writer) {
 func (h HelpInfo) WriteLong(w io.Writer) {
 	h.WriteUsage(w)
 	if h.Help == "" {
-		fmt.Fprintln(w, "\n(no description available)")
+		fmt.Fprint(w, "(no description available)\n\n")
 	} else {
-		fmt.Fprintln(w)
-		fmt.Fprintln(w, h.Help)
+		fmt.Fprint(w, h.Help, "\n\n")
 	}
 	if h.Flags != "" {
-		fmt.Fprint(w, "\n", h.Flags, "\n")
+		fmt.Fprint(w, h.Flags, "\n\n")
 	}
 	if len(h.Commands) != 0 {
 		base := h.Name + " "
-		fmt.Fprintln(w, "\nSubcommands:")
+		fmt.Fprintln(w, "Subcommands:")
 		tw := tabwriter.NewWriter(w, 4, 8, 1, ' ', 0)
 		for _, cmd := range h.Commands {
 			syn := cmd.Synopsis
