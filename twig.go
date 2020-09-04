@@ -20,6 +20,7 @@ var (
 		Name:  filepath.Base(os.Args[0]),
 		Usage: `<command> [arguments]`,
 		Flags: command.FlagSet(os.Args[0]),
+		Help:  `A command-line client for the Twitter API.`,
 
 		Commands: []*command.C{
 			cmduser.Command,
