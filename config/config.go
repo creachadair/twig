@@ -8,9 +8,9 @@ import (
 	"strings"
 
 	"github.com/creachadair/atomicfile"
+	"github.com/creachadair/jhttp"
 	"github.com/creachadair/twitter"
 	"github.com/creachadair/twitter/auth"
-	"github.com/creachadair/twitter/jhttp"
 	yaml "gopkg.in/yaml.v3"
 )
 
