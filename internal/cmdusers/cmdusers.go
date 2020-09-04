@@ -4,11 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/creachadair/twig/command"
 	"github.com/creachadair/twig/config"
-	"github.com/creachadair/twitter/types"
 	"github.com/creachadair/twitter/users"
 )
 
@@ -29,10 +27,6 @@ As a special case, :field is shorthand for "user:field".
 		if len(parsed.Keys) == 0 {
 			fmt.Fprintln(ctx, "Error: no usernames or IDs were specified")
 			return command.FailWithUsage(ctx, args)
-		}
-		if expand != "" {
-			exp := strings.Split(expand, ",")
-			parsed.Fields = append(parsed.Fields, types.Expansions(exp))
 		}
 
 		cli, err := ctx.Config.(*config.Config).NewBearerClient()
@@ -63,13 +57,8 @@ As a special case, :field is shorthand for "user:field".
 	},
 }
 
-var (
-	byID   bool
-	expand string
-)
+var byID bool
 
 func init() {
-	fs := Command.Flags
-	fs.BoolVar(&byID, "id", false, "Resolve users by ID")
-	fs.StringVar(&expand, "expand", "", "Optional expansions (comma-separated)")
+	Command.Flags.BoolVar(&byID, "id", false, "Resolve users by ID")
 }
