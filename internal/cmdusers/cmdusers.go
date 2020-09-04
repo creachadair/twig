@@ -14,31 +14,32 @@ import (
 
 var Command = &command.C{
 	Name:  "users",
-	Usage: "[options] name/id ...",
-	Help:  `Look up the specified user IDs or usernames.`,
+	Usage: "[options] user/id/field ...",
+	Help: `
+Look up the specified user IDs or usernames.
+
+Each argument is either a username, user ID, or field specifier.
+A field specifier has the form type:field, e.g., "user:entities".
+As a special case, :field is shorthand for "user:field".
+`,
 	Flags: command.FlagSet("user"),
 
 	Run: func(ctx *command.Context, args []string) error {
-		if len(args) == 0 {
+		parsed := parseArgs(args)
+		if len(parsed.keys) == 0 {
 			fmt.Fprintln(ctx, "Error: no usernames or IDs were specified")
 			return command.FailWithUsage(ctx, args)
 		}
+
 		cli, err := ctx.Config.(*config.Config).NewBearerClient()
 		if err != nil {
 			return fmt.Errorf("creating client: %w", err)
 		}
 		opts := &users.LookupOpts{
-			More: args[1:],
+			More:     parsed.keys[1:],
+			Optional: parsed.fields,
 		}
-		if userFields != "" {
-			opts.Optional = append(opts.Optional, types.MiscFields{
-				Label_:  "user.fields",
-				Values_: strings.Split(userFields, ","),
-			})
-		}
-		if expand != "" {
-			opts.Optional = append(opts.Optional, types.Expansions(strings.Split(expand, ",")))
-		}
+
 		var q users.Query
 		if byID {
 			q = users.Lookup(args[0], opts)
@@ -59,14 +60,43 @@ var Command = &command.C{
 }
 
 var (
-	byID       bool
-	userFields string
-	expand     string
+	byID   bool
+	expand string
 )
 
 func init() {
 	fs := Command.Flags
 	fs.BoolVar(&byID, "id", false, "Resolve users by ID")
-	fs.StringVar(&userFields, "fields", "", "Optional user fields (comma-separated)")
 	fs.StringVar(&expand, "expand", "", "Optional expansions (comma-separated)")
+}
+
+type parsedArgs struct {
+	keys   []string
+	fields []types.Fields
+}
+
+func parseArgs(args []string) parsedArgs {
+	var parsed parsedArgs
+	if expand != "" {
+		parsed.fields = append(parsed.fields, types.Expansions(strings.Split(expand, ",")))
+	}
+	fieldMap := make(map[string][]string)
+	for _, arg := range args {
+		parts := strings.SplitN(arg, ":", 2)
+		if len(parts) == 1 {
+			parsed.keys = append(parsed.keys, arg)
+			continue
+		}
+		if parts[0] == "" {
+			parts[0] = "user"
+		}
+		fieldMap[parts[0]] = append(fieldMap[parts[0]], parts[1])
+	}
+	for key, vals := range fieldMap {
+		parsed.fields = append(parsed.fields, types.MiscFields{
+			Label_:  key + ".fields",
+			Values_: vals,
+		})
+	}
+	return parsed
 }
