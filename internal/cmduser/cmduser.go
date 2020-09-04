@@ -31,12 +31,16 @@ var Command = &command.C{
 			More: args[1:],
 		}
 		if userFields != "" {
-			opts.Optional = append(opts.Optional,
-				types.MiscFields("user.fields", strings.Split(userFields, ",")))
+			opts.Optional = append(opts.Optional, types.MiscFields{
+				Label_:  "user.fields",
+				Values_: strings.Split(userFields, ","),
+			})
 		}
 		if expand != "" {
-			opts.Optional = append(opts.Optional,
-				types.MiscFields("expansions", strings.Split(expand, ",")))
+			opts.Optional = append(opts.Optional, types.MiscFields{
+				Label_:  "expansions",
+				Values_: strings.Split(expand, ","),
+			})
 		}
 		var q users.Query
 		if byID {
