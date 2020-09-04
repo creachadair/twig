@@ -40,9 +40,9 @@ As a special case, :field is shorthand for "user:field".
 
 		var q users.Query
 		if byID {
-			q = users.Lookup(args[0], opts)
+			q = users.Lookup(parsed.Keys[0], opts)
 		} else {
-			q = users.LookupByName(args[0], opts)
+			q = users.LookupByName(parsed.Keys[0], opts)
 		}
 		rsp, err := q.Invoke(context.Background(), cli)
 		if err != nil {
