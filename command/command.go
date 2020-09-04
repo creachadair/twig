@@ -55,8 +55,13 @@ type C struct {
 	// If nil, Run is responsible for parsing its own flags.
 	Flags *flag.FlagSet
 
-	// Execute the action of the command.
+	// Execute the action of the command. If nil, calls FailWithUsage.
 	Run func(ctx *Context, args []string) error
+
+	// If set, this will be called after flags are parsed (if any) but before
+	// any subcommands are processed. If it reports an error, execution stops
+	// and that error is returned to the caller.
+	Init func(ctx *Context) error
 
 	// Subcommands of this command.
 	Commands []*C
@@ -119,6 +124,12 @@ func Execute(ctx *Context, rawArgs []string) error {
 			return err
 		}
 		args = cmd.Flags.Args()
+	}
+
+	if cmd.Init != nil {
+		if err := cmd.Init(ctx); err != nil {
+			return fmt.Errorf("initializing %q: %v", cmd.Name, err)
+		}
 	}
 
 	// Unclaimed (non-flag) arguments may be free arguments for this command, or
