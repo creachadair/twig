@@ -9,7 +9,7 @@ import (
 
 	"github.com/creachadair/twig/command"
 	"github.com/creachadair/twig/config"
-	"github.com/creachadair/twig/internal/cmduser"
+	"github.com/creachadair/twig/internal/cmdusers"
 	"github.com/creachadair/twitter/jhttp"
 )
 
@@ -23,7 +23,7 @@ var (
 		Help:  `A command-line client for the Twitter API.`,
 
 		Commands: []*command.C{
-			cmduser.Command,
+			cmdusers.Command,
 		},
 	}
 )
