@@ -3,7 +3,6 @@ package cmdusers
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strings"
 
@@ -21,7 +20,8 @@ var Command = &command.C{
 
 	Run: func(ctx *command.Context, args []string) error {
 		if len(args) == 0 {
-			return errors.New("no usernames or IDs specified")
+			fmt.Fprintln(ctx, "Error: no usernames or IDs were specified")
+			return command.FailWithUsage(ctx, args)
 		}
 		cli, err := ctx.Config.(*config.Config).NewClient()
 		if err != nil {

@@ -16,11 +16,12 @@ import (
 // the target of any diagnostic output the command wishes to emit.
 // Primary command output should be sent to stdout.
 type Context struct {
-	Self   *C          // the C value that carries the Run function
-	Parent *C          // if this is a subcommand, its parent command (or nil)
-	Name   string      // the name by which the command was invoked
-	Config interface{} // configuration data
-	Log    io.Writer   // where to write diagnostic output (nil for os.Stderr)
+	Self    *C          // the C value that carries the Run function
+	Parent  *C          // if this is a subcommand, its parent command (or nil)
+	Name    string      // the name by which the command was invoked
+	Helping bool        // whether we are handling a help request
+	Config  interface{} // configuration data
+	Log     io.Writer   // where to write diagnostic output (nil for os.Stderr)
 }
 
 // output returns the log writer for c.
@@ -61,28 +62,13 @@ type C struct {
 	Commands []*C
 }
 
-// Dispatch searches for the given subcommand name under c. If it is found, it
-// is passed to Execute with args. Otherwise, if name == "help", write a long
-// help to ctx and report ErrUsage.
-func (c *C) Dispatch(ctx *Context, name string, args []string) error {
+func (c *C) findDispatchTarget(ctx *Context, name string) *C {
 	for _, cmd := range c.Commands {
 		if cmd.Name == name {
-			return Execute(&Context{
-				Name:   cmd.Name,
-				Self:   cmd,
-				Parent: c,
-				Config: ctx.Config,
-				Log:    ctx.Log,
-			}, args)
+			return cmd
 		}
 	}
-
-	// If there wasn't an explicitly-defined "help" command, simulate one.
-	if name == "help" {
-		c.HelpInfo(true).WriteLong(ctx.output())
-		return ErrUsage
-	}
-	return fmt.Errorf("%s: subcommand %q not found", c.Name, name)
+	return nil
 }
 
 // HelpInfo returns help details for c. If includeCommands is true and c has
@@ -127,23 +113,58 @@ func Execute(ctx *Context, rawArgs []string) error {
 	// before passing control to the handler.
 	if cmd.Flags != nil {
 		err := cmd.Flags.Parse(rawArgs)
-		if err != nil {
-			if err == flag.ErrHelp {
-				cmd.HelpInfo(true).WriteSynopsis(ctx.output())
-				return ErrUsage
-			}
+		if err == flag.ErrHelp {
+			return RunShortHelp(ctx, args)
+		} else if err != nil {
 			return err
 		}
 		args = cmd.Flags.Args()
 	}
 
-	// If there are unclaimed arguments and subcommands to consume them, try to
-	// dispatch on the first in line. As a special case, "help" alone is sent
-	// for dispatch.
-	if len(args) != 0 {
-		if len(cmd.Commands) != 0 || (len(args) == 1 && args[0] == "help") {
-			return cmd.Dispatch(ctx, args[0], args[1:])
+	// Unclaimed (non-flag) arguments may be free arguments for this command, or
+	// may belong to a subcommand.
+	for len(args) != 0 {
+		// If there's a subcommand on this name, that takes precedence.
+		if sub := cmd.findDispatchTarget(ctx, args[0]); sub != nil {
+			nctx := *ctx
+			nctx.Self = sub
+			nctx.Parent = cmd
+			return Execute(&nctx, args[1:])
 		}
+
+		// Otherwise...
+		//
+		// If we see the word "help", record that we're looking for help and try
+		// to move further down the chain. We don't do this at the END of the
+		// chain, however, unless the cmd has no runner: Otherwise we might eat
+		// an argument for the command itself.
+		//
+		// But if cmd.Run == nil, then there is nothing to do, and we can safely
+		// request help. If a command wants "help" to work from its own argument
+		// list it can include commands.LongHelpCommand in its subcommands.
+
+		if args[0] == "help" && (len(args) > 1 || cmd.Run == nil) {
+			ctx.Helping = true
+			args = args[1:] // discard "help"
+			continue
+		}
+
+		// The remaining args are free arguments for cmd itself.
+		if cmd.Run == nil && !ctx.Helping {
+			// This command does not have any action, so the arguments are dead.
+			fmt.Fprintf(ctx, "Error: %s command %q not understood\n", cmd.Name, args[0])
+		}
+		break
 	}
-	return cmd.run(ctx, args)
+
+	// If the help flag is set, don't actually run the command,
+	if ctx.Helping {
+		return RunLongHelp(ctx, args)
+	} else if cmd.Run == nil {
+		return FailWithUsage(ctx, args)
+	} else if len(args) == 1 && args[0] == "help" {
+		// This is probably not what the user intends, but who knows?
+		fmt.Fprintf(ctx, "Warning: \"help\" will be used as an argument to %[1]q (write \"%[1]s -help\" for command help)\n", cmd.Name)
+	}
+	return cmd.Run(ctx, args)
 }
