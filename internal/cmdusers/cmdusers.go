@@ -25,10 +25,14 @@ As a special case, :field is shorthand for "user:field".
 	Flags: command.FlagSet("user"),
 
 	Run: func(ctx *command.Context, args []string) error {
-		parsed := parseArgs(args)
-		if len(parsed.keys) == 0 {
+		parsed := config.ParseArgs(args, "user")
+		if len(parsed.Keys) == 0 {
 			fmt.Fprintln(ctx, "Error: no usernames or IDs were specified")
 			return command.FailWithUsage(ctx, args)
+		}
+		if expand != "" {
+			exp := strings.Split(expand, ",")
+			parsed.Fields = append(parsed.Fields, types.Expansions(exp))
 		}
 
 		cli, err := ctx.Config.(*config.Config).NewBearerClient()
@@ -36,8 +40,8 @@ As a special case, :field is shorthand for "user:field".
 			return fmt.Errorf("creating client: %w", err)
 		}
 		opts := &users.LookupOpts{
-			More:     parsed.keys[1:],
-			Optional: parsed.fields,
+			More:     parsed.Keys[1:],
+			Optional: parsed.Fields,
 		}
 
 		var q users.Query
@@ -68,35 +72,4 @@ func init() {
 	fs := Command.Flags
 	fs.BoolVar(&byID, "id", false, "Resolve users by ID")
 	fs.StringVar(&expand, "expand", "", "Optional expansions (comma-separated)")
-}
-
-type parsedArgs struct {
-	keys   []string
-	fields []types.Fields
-}
-
-func parseArgs(args []string) parsedArgs {
-	var parsed parsedArgs
-	if expand != "" {
-		parsed.fields = append(parsed.fields, types.Expansions(strings.Split(expand, ",")))
-	}
-	fieldMap := make(map[string][]string)
-	for _, arg := range args {
-		parts := strings.SplitN(arg, ":", 2)
-		if len(parts) == 1 {
-			parsed.keys = append(parsed.keys, arg)
-			continue
-		}
-		if parts[0] == "" {
-			parts[0] = "user"
-		}
-		fieldMap[parts[0]] = append(fieldMap[parts[0]], parts[1])
-	}
-	for key, vals := range fieldMap {
-		parsed.fields = append(parsed.fields, types.MiscFields{
-			Label_:  key + ".fields",
-			Values_: vals,
-		})
-	}
-	return parsed
 }
