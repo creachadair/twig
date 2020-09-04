@@ -27,7 +27,8 @@ type Config struct {
 
 	// Non-persistent fields.
 	filePath string
-	Log      func(tag, msg string) `yaml:"-"`
+	Log      func(tag jhttp.LogTag, msg string) `yaml:"-"`
+	LogMask  jhttp.LogTag                       `yaml:"-"`
 }
 
 // User carries an access token for an individual user.
@@ -45,6 +46,7 @@ func (c *Config) NewBearerClient() (*twitter.Client, error) {
 	return twitter.NewClient(&twitter.ClientOpts{
 		Authorize: jhttp.BearerTokenAuthorizer(c.BearerToken),
 		Log:       c.Log,
+		LogMask:   c.LogMask,
 	}), nil
 }
 
