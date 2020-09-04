@@ -20,7 +20,7 @@ Each argument is either a username, user ID, or field specifier.
 A field specifier has the form type:field, e.g., "user:entities".
 As a special case, :field is shorthand for "user:field".
 `,
-	Flags: command.FlagSet("user"),
+	Flags: command.FlagSet("users"),
 
 	Run: func(ctx *command.Context, args []string) error {
 		parsed := config.ParseArgs(args, "user")
