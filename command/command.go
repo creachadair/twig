@@ -2,13 +2,11 @@
 package command
 
 import (
-	"bytes"
 	"errors"
 	"flag"
 	"fmt"
 	"io"
 	"os"
-	"strings"
 )
 
 // Context is the environment passed to the Run function of a command.
@@ -74,32 +72,6 @@ func (c *C) findDispatchTarget(ctx *Context, name string) *C {
 		}
 	}
 	return nil
-}
-
-// HelpInfo returns help details for c. If includeCommands is true and c has
-// subcommands, their help is also generated.
-func (c *C) HelpInfo(includeCommands bool) HelpInfo {
-	help := strings.TrimSpace(c.Help)
-	prefix := "  " + c.Name + " "
-	h := HelpInfo{
-		Name:     c.Name,
-		Synopsis: strings.SplitN(help, "\n", 2)[0],
-		Usage:    "Usage:\n\n" + indent(prefix, prefix, strings.Join(c.usageLines(), "\n")),
-		Help:     help,
-	}
-	if c.Flags != nil {
-		var buf bytes.Buffer
-		fmt.Fprintln(&buf, "\nOptions:")
-		c.Flags.SetOutput(&buf)
-		c.Flags.PrintDefaults()
-		h.Flags = strings.TrimSpace(buf.String())
-	}
-	if includeCommands {
-		for _, cmd := range c.Commands {
-			h.Commands = append(h.Commands, cmd.HelpInfo(false)) // don't recur
-		}
-	}
-	return h
 }
 
 // ErrUsage is returned from Execute if the user requested help.
