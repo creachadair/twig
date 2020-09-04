@@ -37,10 +37,7 @@ var Command = &command.C{
 			})
 		}
 		if expand != "" {
-			opts.Optional = append(opts.Optional, types.MiscFields{
-				Label_:  "expansions",
-				Values_: strings.Split(expand, ","),
-			})
+			opts.Optional = append(opts.Optional, types.Expansions(strings.Split(expand, ",")))
 		}
 		var q users.Query
 		if byID {
