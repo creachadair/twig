@@ -70,6 +70,6 @@ var (
 func init() {
 	fs := Command.Flags
 	fs.BoolVar(&byID, "id", false, "Resolve users by ID")
-	fs.StringVar(&userFields, "user.fields", "", "Optional user fields (comma-separated)")
+	fs.StringVar(&userFields, "fields", "", "Optional user fields (comma-separated)")
 	fs.StringVar(&expand, "expand", "", "Optional expansions (comma-separated)")
 }
