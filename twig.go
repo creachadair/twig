@@ -10,6 +10,7 @@ import (
 	"github.com/creachadair/jhttp"
 	"github.com/creachadair/twig/command"
 	"github.com/creachadair/twig/config"
+	"github.com/creachadair/twig/internal/cmdtweets"
 	"github.com/creachadair/twig/internal/cmdusers"
 )
 
@@ -36,6 +37,7 @@ var (
 
 		Commands: []*command.C{
 			cmdusers.Command,
+			cmdtweets.Command,
 		},
 	}
 )
