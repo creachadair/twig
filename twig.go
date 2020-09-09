@@ -10,6 +10,7 @@ import (
 	"github.com/creachadair/jhttp"
 	"github.com/creachadair/twig/command"
 	"github.com/creachadair/twig/config"
+	"github.com/creachadair/twig/internal/cmdhelp"
 	"github.com/creachadair/twig/internal/cmdtweets"
 	"github.com/creachadair/twig/internal/cmdusers"
 )
@@ -21,7 +22,6 @@ var (
 	root = &command.C{
 		Name:  filepath.Base(os.Args[0]),
 		Usage: `<command> [arguments]`,
-		Flags: command.FlagSet(os.Args[0]),
 		Help:  `A command-line client for the Twitter API.`,
 
 		Init: func(ctx *command.Context) error {
@@ -35,10 +35,11 @@ var (
 			return nil
 		},
 
-		Commands: []*command.C{
+		Commands: append([]*command.C{
 			cmdusers.Command,
 			cmdtweets.Command,
-		},
+			cmdhelp.Command,
+		}, cmdhelp.Topics...),
 	}
 )
 
@@ -54,13 +55,10 @@ func main() {
 		log.Fatalf("Loading config file: %v", err)
 	}
 
-	if err := command.Execute(&command.Context{
-		Self:   root,
-		Name:   root.Name,
-		Config: cfg,
-	}, os.Args[1:]); errors.Is(err, command.ErrUsage) {
-		os.Exit(2)
-	} else if err != nil {
+	if err := command.Execute(root.NewContext(cfg), os.Args[1:]); err != nil {
+		if errors.Is(err, command.ErrUsage) {
+			os.Exit(2)
+		}
 		log.Printf("Error: %v", err)
 		var jerr *jhttp.Error
 		if errors.As(err, &jerr) {
