@@ -4,10 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/creachadair/twig/command"
 	"github.com/creachadair/twig/config"
 	"github.com/creachadair/twitter/tweets"
+	"github.com/creachadair/twitter/types"
 )
 
 var Command = &command.C{
@@ -85,11 +87,8 @@ page token to resume searching from.
 		if err != nil {
 			return fmt.Errorf("creating client: %w", err)
 		}
-		rsp, err := tweets.SearchRecent(searchQuery, &tweets.SearchOpts{
-			PageToken:  pageToken,
-			MaxResults: maxResults,
-			Optional:   parsed.Fields,
-		}).Invoke(context.Background(), cli)
+		searchOpts.Optional = parsed.Fields
+		rsp, err := tweets.SearchRecent(searchQuery, &searchOpts).Invoke(context.Background(), cli)
 		if err != nil {
 			return err
 		}
@@ -103,14 +102,42 @@ page token to resume searching from.
 }
 
 var (
-	maxResults  int
-	pageToken   string
+	searchOpts  tweets.SearchOpts
 	searchQuery string
 )
 
 func init() {
 	fs := &cmdSearch.Flags
-	fs.IntVar(&maxResults, "max-results", 0, "Maximum results to request (10..100)")
-	fs.StringVar(&pageToken, "page", "", "Page token to resume search")
+	fs.IntVar(&searchOpts.MaxResults, "max-results", 0, "Maximum results to request (10..100)")
+	fs.StringVar(&searchOpts.PageToken, "page", "", "Page token to resume search")
+	fs.StringVar(&searchOpts.SinceID, "after", "", "Return tweets (strictly) after this ID")
+	fs.StringVar(&searchOpts.UntilID, "before", "", "Return tweets (strictly) before this ID")
 	fs.StringVar(&searchQuery, "query", "", "Search query (required)")
+	fs.Var(timestamp{&searchOpts.StartTime}, "since", "Return tweets no older than this")
+	fs.Var(timestamp{&searchOpts.EndTime}, "until", "Return tweets no newer than this")
 }
+
+type timestamp struct {
+	*time.Time
+}
+
+func (ts timestamp) Set(s string) error {
+	t, err := time.Parse(types.DateFormat, s)
+	if err != nil {
+		return err
+	}
+	*ts.Time = t
+	return nil
+}
+
+func (ts timestamp) String() string {
+	if ts.Time == nil {
+		// The flag package doesn't actually use this correctly, but it will
+		// panic if we don't support a zero value. This makes me angry.
+		return types.DateFormat
+	}
+	return ts.Time.Format(types.DateFormat)
+}
+
+// Get satisfies flag.Getter, the concrete type is time.Time.
+func (ts timestamp) Get() interface{} { return *ts.Time }
