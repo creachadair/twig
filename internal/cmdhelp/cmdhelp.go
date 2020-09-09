@@ -70,4 +70,21 @@ The following field tags are available:
   location     public_metrics
 `,
 	},
+	{
+		Name: "poll.fields",
+		Help: `
+List optional Poll field parameters.
+
+By default, poll objects are returned with a minimal set of default
+fields (ID and options). Additional fields can be requested in
+the query. Use the syntax "poll:name", e.g., "poll:duration_minutes".
+
+The following field tags are available:
+
+  attachments
+  duration_minutes
+  end_datetime
+  voting_status
+`,
+	},
 }
