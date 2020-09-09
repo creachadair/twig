@@ -25,13 +25,18 @@ var (
 		Help:  `A command-line client for the Twitter API.`,
 
 		Init: func(ctx *command.Context) error {
+			path := os.ExpandEnv(configFile)
+			cfg, err := config.Load(path)
+			if err != nil {
+				return err
+			}
 			if logLevel > 0 {
-				cfg := ctx.Config.(*config.Config)
 				cfg.Log = func(tag jhttp.LogTag, msg string) {
 					log.Printf("DEBUG :: %s | %s", tag, msg)
 				}
 				cfg.LogMask = jhttp.LogTag(logLevel)
 			}
+			ctx.Config = cfg
 			return nil
 		},
 
@@ -49,13 +54,7 @@ func init() {
 }
 
 func main() {
-	path := os.ExpandEnv(configFile)
-	cfg, err := config.Load(path)
-	if err != nil {
-		log.Fatalf("Loading config file: %v", err)
-	}
-
-	if err := command.Execute(root.NewContext(cfg), os.Args[1:]); err != nil {
+	if err := command.Execute(root.NewContext(nil), os.Args[1:]); err != nil {
 		if errors.Is(err, command.ErrUsage) {
 			os.Exit(2)
 		}
