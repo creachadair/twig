@@ -76,6 +76,18 @@ type C struct {
 // Runnable reports whether the command has any action defined.
 func (c *C) Runnable() bool { return c != nil && (c.Run != nil || c.Init != nil) }
 
+// HasRunnableSubcommands reports whether c has any runnable subcommands.
+func (c *C) HasRunnableSubcommands() bool {
+	if c != nil {
+		for _, cmd := range c.Commands {
+			if cmd.Runnable() {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // NewContext returns a new root context for c with the optional config value.
 func (c *C) NewContext(config interface{}) *Context {
 	return &Context{Command: c, Config: config}
@@ -125,9 +137,15 @@ func Execute(ctx *Context, rawArgs []string) error {
 	// Unclaimed (non-flag) arguments may be free arguments for this command, or
 	// may belong to a subcommand.
 	if len(args) != 0 {
-		// If there's a subcommand on this name, that takes precedence.
-		if sub := cmd.FindSubcommand(args[0]); sub.Runnable() {
-			return Execute(ctx.newChild(sub), args[1:])
+		sub, rest := cmd.FindSubcommand(args[0]), args[1:]
+		hasSub := sub.HasRunnableSubcommands()
+
+		if sub.Runnable() || (hasSub && len(rest) != 0) {
+			// A runnable subcommand takes precedence.
+			return Execute(ctx.newChild(sub), rest)
+		} else if hasSub && len(rest) == 0 {
+			// Show help for a topic subcommand with subcommands of its own.
+			return runLongHelp(ctx.newChild(sub), nil)
 		} else if cmd.Run == nil {
 			fmt.Fprintf(ctx, "Error: %s command %q not understood\n", cmd.Name, args[0])
 			return ErrUsage
