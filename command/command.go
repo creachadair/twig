@@ -74,7 +74,7 @@ type C struct {
 }
 
 // Runnable reports whether the command has any action defined.
-func (c *C) Runnable() bool { return c.Run != nil || c.Init != nil }
+func (c *C) Runnable() bool { return c != nil && (c.Run != nil || c.Init != nil) }
 
 // NewContext returns a new root context for c with the optional config value.
 func (c *C) NewContext(config interface{}) *Context {
@@ -126,11 +126,11 @@ func Execute(ctx *Context, rawArgs []string) error {
 	// may belong to a subcommand.
 	if len(args) != 0 {
 		// If there's a subcommand on this name, that takes precedence.
-		if sub := cmd.FindSubcommand(args[0]); sub != nil {
+		if sub := cmd.FindSubcommand(args[0]); sub.Runnable() {
 			return Execute(ctx.newChild(sub), args[1:])
 		} else if cmd.Run == nil {
 			fmt.Fprintf(ctx, "Error: %s command %q not understood\n", cmd.Name, args[0])
-			return FailWithUsage(ctx, args)
+			return ErrUsage
 		}
 	}
 	if cmd.Run == nil {
