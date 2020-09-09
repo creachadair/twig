@@ -17,7 +17,7 @@ var Topics = []*command.C{
 	{
 		Name: "expansions",
 		Help: `
-Expansions available for query results.
+List expansions available for query results.
 
 By default, result objects refer to other objects by reference (ID).
 The server will expand certain references on request.
@@ -36,8 +36,38 @@ pinned_tweet_id                : expand a tweet object for the pinned ID in a us
 	},
 	{
 		Name: "tweet.fields",
+		Help: `
+List optional Tweet field parameters.
+
+By default, tweet objects are returned with a minimal set of default
+fields (ID and text). Additional fields can be requested in the query.
+Use the syntax "tweet:name" on the command-line, e.g., "tweet:author_id".
+
+The following field tags are available:
+
+  attachments          geo                  promoted_metrics
+  author_id            in_reply_to_user_id  public_metrics
+  context_annotations  lang                 referenced_tweets
+  conversation_id      non_public_metrics   source
+  created_at           organic_metrics      withheld
+  entities             possibly_sensitive
+`,
 	},
 	{
 		Name: "user.fields",
+		Help: `
+List optional User field parameters.
+
+By default, user objects are returned with a minimal set of default
+fields (ID, name, and username). Additional fields can be requested in
+the query. Use the syntax "user:name", e.g., "user:created_at".
+
+The following field tags are available:
+
+  created_at   pinned_tweet_id    url
+  description  profile_image_url  verified
+  entities     protected          withheld
+  location     public_metrics
+`,
 	},
 }
