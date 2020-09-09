@@ -132,8 +132,10 @@ func (ts timestamp) Set(s string) error {
 
 func (ts timestamp) String() string {
 	if ts.Time == nil {
-		// The flag package doesn't actually use this correctly, but it will
-		// panic if we don't support a zero value. This makes me angry.
+		// This value is never shown to the user. It averts a panic in the flag
+		// package which constructs a zero value to call its String method.
+		return ""
+	} else if ts.Time.IsZero() {
 		return types.DateFormat
 	}
 	return ts.Time.Format(types.DateFormat)
