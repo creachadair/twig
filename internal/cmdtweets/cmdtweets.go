@@ -55,7 +55,6 @@ As a special case, :field is shorthand for "tweet:field".
 		{
 			Name:  "search",
 			Usage: "[-page token] -query q [field-spec...]",
-			Flags: command.FlagSet("search"),
 			Help: `
 Search for recent tweets matching the specified query.
 

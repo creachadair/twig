@@ -14,10 +14,8 @@ import (
 // the target of any diagnostic output the command wishes to emit.
 // Primary command output should be sent to stdout.
 type Context struct {
-	Self    *C          // the C value that carries the Run function
-	Parent  *C          // if this is a subcommand, its parent command (or nil)
-	Name    string      // the name by which the command was invoked
-	Helping bool        // whether we are handling a help request
+	Parent  *Context    // if this is a subcommand, its parent context (or nil)
+	Command *C          // the C value that carries the Run function
 	Config  interface{} // configuration data
 	Log     io.Writer   // where to write diagnostic output (nil for os.Stderr)
 }
@@ -28,6 +26,13 @@ func (c *Context) output() io.Writer {
 		return c.Log
 	}
 	return os.Stderr
+}
+
+func (c *Context) newChild(cmd *C) *Context {
+	cp := *c // shallow copy
+	cp.Command = cmd
+	cp.Parent = c
+	return &cp
 }
 
 // Write implements the io.Writer interface. Writing to a context writes to its
@@ -49,9 +54,12 @@ type C struct {
 	// The first non-blank line of this text is used as a synopsis.
 	Help string
 
-	// If set, the flags parsed from the arguments.
-	// If nil, Run is responsible for parsing its own flags.
-	Flags *flag.FlagSet
+	// Flags parsed from the raw argument list. This will be initialized before
+	// Init or Run is called unless CustomFlags is true.
+	Flags flag.FlagSet
+
+	// If true, the command is responsible for flag parsing.
+	CustomFlags bool
 
 	// Execute the action of the command. If nil, calls FailWithUsage.
 	Run func(ctx *Context, args []string) error
@@ -65,7 +73,16 @@ type C struct {
 	Commands []*C
 }
 
-func (c *C) findDispatchTarget(ctx *Context, name string) *C {
+// Runnable reports whether the command has any action defined.
+func (c *C) Runnable() bool { return c.Run != nil || c.Init != nil }
+
+// NewContext returns a new root context for c with the optional config value.
+func (c *C) NewContext(config interface{}) *Context {
+	return &Context{Command: c, Config: config}
+}
+
+// FindSubcommand returns the subcommand of c matching name, or nil.
+func (c *C) FindSubcommand(name string) *C {
 	for _, cmd := range c.Commands {
 		if cmd.Name == name {
 			return cmd
@@ -83,15 +100,16 @@ var ErrUsage = errors.New("help requested")
 // Execute writes usage information to ctx and returns ErrUsage if the
 // command-line usage was incorrect or the user requested -help via flags.
 func Execute(ctx *Context, rawArgs []string) error {
-	cmd := ctx.Self
+	cmd := ctx.Command
 	args := rawArgs
 
-	// If this command has a flag set, parse the arguments and check for errors
-	// before passing control to the handler.
-	if cmd.Flags != nil {
+	// Unless this command does custom flag parsing, parse the arguments and
+	// check for errors before passing control to the handler.
+	if !cmd.CustomFlags {
+		cmd.Flags.Usage = func() {}
 		err := cmd.Flags.Parse(rawArgs)
 		if err == flag.ErrHelp {
-			return RunShortHelp(ctx, args)
+			return runShortHelp(ctx, args)
 		} else if err != nil {
 			return err
 		}
@@ -106,48 +124,17 @@ func Execute(ctx *Context, rawArgs []string) error {
 
 	// Unclaimed (non-flag) arguments may be free arguments for this command, or
 	// may belong to a subcommand.
-	for len(args) != 0 {
+	if len(args) != 0 {
 		// If there's a subcommand on this name, that takes precedence.
-		if sub := cmd.findDispatchTarget(ctx, args[0]); sub != nil {
-			nctx := *ctx
-			nctx.Self = sub
-			nctx.Parent = cmd
-			return Execute(&nctx, args[1:])
-		}
-
-		// Otherwise...
-		//
-		// If we see the word "help", record that we're looking for help and try
-		// to move further down the chain. We don't do this at the END of the
-		// chain, however, unless the cmd has no runner: Otherwise we might eat
-		// an argument for the command itself.
-		//
-		// But if cmd.Run == nil, then there is nothing to do, and we can safely
-		// request help. If a command wants "help" to work from its own argument
-		// list it can include commands.LongHelpCommand in its subcommands.
-
-		if args[0] == "help" && (len(args) > 1 || cmd.Run == nil) {
-			ctx.Helping = true
-			args = args[1:] // discard "help"
-			continue
-		}
-
-		// The remaining args are free arguments for cmd itself.
-		if cmd.Run == nil && !ctx.Helping {
-			// This command does not have any action, so the arguments are dead.
+		if sub := cmd.FindSubcommand(args[0]); sub != nil {
+			return Execute(ctx.newChild(sub), args[1:])
+		} else if cmd.Run == nil {
 			fmt.Fprintf(ctx, "Error: %s command %q not understood\n", cmd.Name, args[0])
+			return FailWithUsage(ctx, args)
 		}
-		break
 	}
-
-	// If the help flag is set, don't actually run the command,
-	if ctx.Helping {
-		return RunLongHelp(ctx, args)
-	} else if cmd.Run == nil {
-		return FailWithUsage(ctx, args)
-	} else if len(args) == 1 && args[0] == "help" {
-		// This is probably not what the user intends, but who knows?
-		fmt.Fprintf(ctx, "Warning: \"help\" will be used as an argument to %[1]q (write \"%[1]s -help\" for command help)\n", cmd.Name)
+	if cmd.Run == nil {
+		return runLongHelp(ctx, args)
 	}
 	return cmd.Run(ctx, args)
 }

@@ -1,8 +1,6 @@
 package command
 
 import (
-	"flag"
-	"io/ioutil"
 	"strings"
 )
 
@@ -33,37 +31,6 @@ func indent(first, prefix, text string) string {
 // FailWithUsage is a run function that logs a usage message for the command
 // and returns ErrUsage.
 func FailWithUsage(ctx *Context, args []string) error {
-	ctx.Self.HelpInfo(false).WriteUsage(ctx)
+	ctx.Command.HelpInfo(false).WriteUsage(ctx)
 	return ErrUsage
-}
-
-// RunLongHelp is a run function that implements the "help" functionality.
-func RunLongHelp(ctx *Context, args []string) error {
-	ctx.Self.HelpInfo(true).WriteLong(ctx)
-	return ErrUsage
-}
-
-// RunShortHelp is a run function that implements synopsis help.
-func RunShortHelp(ctx *Context, args []string) error {
-	ctx.Self.HelpInfo(false).WriteSynopsis(ctx)
-	return ErrUsage
-}
-
-// LongHelpCommand is a command that implements long help.  It displays the
-// help for the enclosing command.
-var LongHelpCommand = &C{
-	Name: "help",
-	Help: "Display this help message",
-	Run: func(ctx *Context, args []string) error {
-		ctx.Parent.HelpInfo(true).WriteLong(ctx)
-		return ErrUsage
-	},
-}
-
-// FlagSet creates a new empty flag set for the given command name.
-// This is a shortcut for flag.NewFlagSet(name, flag.ContinueOnError).
-func FlagSet(name string) *flag.FlagSet {
-	fs := flag.NewFlagSet(name, flag.ContinueOnError)
-	fs.SetOutput(ioutil.Discard)
-	return fs
 }
