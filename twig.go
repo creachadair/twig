@@ -11,8 +11,8 @@ import (
 	"github.com/creachadair/jhttp"
 	"github.com/creachadair/twig/config"
 	"github.com/creachadair/twig/internal/cmdhelp"
-	"github.com/creachadair/twig/internal/cmdtweets"
-	"github.com/creachadair/twig/internal/cmdusers"
+	"github.com/creachadair/twig/internal/cmdtweet"
+	"github.com/creachadair/twig/internal/cmduser"
 )
 
 var (
@@ -41,8 +41,8 @@ var (
 		},
 
 		Commands: append([]*command.C{
-			cmdusers.Command,
-			cmdtweets.Command,
+			cmduser.Command,
+			cmdtweet.Command,
 			cmdhelp.Command,
 		}, cmdhelp.Topics...),
 	}

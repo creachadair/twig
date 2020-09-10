@@ -1,4 +1,4 @@
-package cmdtweets
+package cmdtweet
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 )
 
 var Command = &command.C{
-	Name: "tweets",
+	Name: "tweet",
 	Help: "Look up or search tweets.",
 	Commands: []*command.C{
 		cmdLookup,

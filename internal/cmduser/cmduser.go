@@ -1,4 +1,4 @@
-package cmdusers
+package cmduser
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 )
 
 var Command = &command.C{
-	Name:  "users",
+	Name:  "user",
 	Usage: "[options] user/id/field ...",
 	Help: `
 Look up the specified user IDs or usernames.
