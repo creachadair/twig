@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/creachadair/twig/command"
+	"github.com/creachadair/command"
 	"github.com/creachadair/twig/config"
 	"github.com/creachadair/twitter/users"
 )

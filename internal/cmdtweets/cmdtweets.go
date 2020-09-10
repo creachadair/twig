@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/creachadair/twig/command"
+	"github.com/creachadair/command"
 	"github.com/creachadair/twig/config"
 	"github.com/creachadair/twitter/tweets"
 	"github.com/creachadair/twitter/types"

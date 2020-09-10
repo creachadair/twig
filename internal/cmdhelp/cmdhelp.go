@@ -1,7 +1,7 @@
 package cmdhelp
 
 import (
-	"github.com/creachadair/twig/command"
+	"github.com/creachadair/command"
 )
 
 var Command = &command.C{

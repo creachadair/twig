@@ -7,8 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/creachadair/command"
 	"github.com/creachadair/jhttp"
-	"github.com/creachadair/twig/command"
 	"github.com/creachadair/twig/config"
 	"github.com/creachadair/twig/internal/cmdhelp"
 	"github.com/creachadair/twig/internal/cmdtweets"
