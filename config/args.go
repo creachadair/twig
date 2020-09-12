@@ -30,8 +30,17 @@ func ParseArgs(args []string, dtype string) ParsedArgs {
 			parsed.Keys = append(parsed.Keys, arg)
 			continue
 		}
-		if parts[0] == "" {
+		switch parts[0] {
+		case "":
 			parts[0] = dtype
+		case "m":
+			parts[0] = "media"
+		case "u":
+			parts[0] = "user"
+		case "t":
+			parts[0] = "tweet"
+		case "l":
+			parts[0] = "place"
 		}
 		fieldMap[parts[0]] = append(fieldMap[parts[0]], parts[1])
 	}
