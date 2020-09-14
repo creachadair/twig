@@ -11,6 +11,7 @@ import (
 	"github.com/creachadair/jhttp"
 	"github.com/creachadair/twig/config"
 	"github.com/creachadair/twig/internal/cmdhelp"
+	"github.com/creachadair/twig/internal/cmdrules"
 	"github.com/creachadair/twig/internal/cmdtweet"
 	"github.com/creachadair/twig/internal/cmduser"
 )
@@ -43,6 +44,7 @@ var (
 		Commands: append([]*command.C{
 			cmduser.Command,
 			cmdtweet.Command,
+			cmdrules.Command,
 			cmdhelp.Command,
 		}, cmdhelp.Topics...),
 	}
