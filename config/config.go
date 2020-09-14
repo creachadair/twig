@@ -43,7 +43,7 @@ func (c *Config) NewBearerClient() (*twitter.Client, error) {
 	if c.BearerToken == "" {
 		return nil, errors.New("no bearer token is available")
 	}
-	return twitter.NewClient(&twitter.ClientOpts{
+	return twitter.NewClient(&jhttp.Client{
 		Authorize: jhttp.BearerTokenAuthorizer(c.BearerToken),
 		Log:       c.Log,
 		LogMask:   c.LogMask,
@@ -58,7 +58,7 @@ func (c *Config) NewUserClient(user string) (*twitter.Client, error) {
 		return nil, fmt.Errorf("no access token foundfor user %q", user)
 	}
 	cfg := auth.Config{APIKey: c.APIKey, APISecret: c.APISecret}
-	return twitter.NewClient(&twitter.ClientOpts{
+	return twitter.NewClient(&jhttp.Client{
 		Authorize: cfg.Authorizer(u.Token, u.Secret),
 		Log:       c.Log,
 	}), nil
