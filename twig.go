@@ -42,8 +42,8 @@ var (
 		},
 
 		Commands: append([]*command.C{
-			cmduser.Command,
 			cmdtweet.Command,
+			cmduser.Command,
 			cmdrules.Command,
 			cmdhelp.Command,
 		}, cmdhelp.Topics...),
