@@ -25,21 +25,29 @@ Use the syntax "@name" on the command-line, e.g. "@author_id".
 
 author_id
    : expand a user object for the author of a tweet
-referenced_tweets.id
+
+referenced_tweets.id           (shortcut: tweets, ref_tweets)
    : expand referenced tweets (retweets, replies, quotes)
-in_reply_to_user_id
+
+in_reply_to_user_id            (shortcut: reply_to_user)
    : expand a user object for the author of a replied-to tweet
-attachments.media_keys
+
+attachments.media_keys         (shortcut: media_keys)
    : expand media objects (videos, images) referenced in a tweet
-attachments.poll_ids
+
+attachments.poll_ids           (shortcut: poll_ids)
    : expand poll objects defined in a tweet
-geo.place_id
+
+geo.place_id                   (shortcut: place_id)
    : expand location data tagged in a tweet
-entities.mentions.username
+
+entities.mentions.username     (shortcut: mentions)
    : expand user objects for users mentioned in a tweet
-referenced_tweets.id.author_id
+
+referenced_tweets.id.author_id (shortcut: ref_author)
    : expand user objects for the authors of referenced tweets
-pinned_tweet_id
+
+pinned_tweet_id                (shortcut: pinned_tweet)
    : expand a tweet object for the pinned ID in a user profile
 `,
 	},

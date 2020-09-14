@@ -20,6 +20,9 @@ func ParseArgs(args []string, dtype string) ParsedArgs {
 	for _, arg := range args {
 		// @foo is an expansion
 		if exp := strings.TrimPrefix(arg, "@"); exp != arg {
+			if sc, ok := expShortcut[exp]; ok {
+				exp = sc
+			}
 			expand = append(expand, exp)
 			continue
 		}
@@ -60,4 +63,16 @@ func ParseArgs(args []string, dtype string) ParsedArgs {
 type ParsedArgs struct {
 	Keys   []string // all arguments that are not field specs, in the order given
 	Fields []types.Fields
+}
+
+var expShortcut = map[string]string{
+	"tweets":        "referenced_tweets.id",
+	"ref_tweets":    "referenced_tweets.id",
+	"reply_to_user": "in_reply_to_user_id",
+	"media_keys":    "attachments.media_keys",
+	"poll_ids":      "attachments.poll_ids",
+	"place_id":      "geo.place_id",
+	"mentions":      "entities.mentions.username",
+	"ref_author":    "referenced_tweets.id.author_id",
+	"pinned_tweet":  "pinned_tweet_id",
 }
