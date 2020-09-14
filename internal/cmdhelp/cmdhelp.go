@@ -17,7 +17,7 @@ var Topics = []*command.C{
 	{
 		Name: "expansions",
 		Help: `
-List expansions available for query results.
+List of expansions available for query results.
 
 By default, result objects refer to other objects by reference (ID).
 The server will expand certain references on request.
@@ -54,7 +54,7 @@ pinned_tweet_id                (shortcut: pinned_tweet)
 	{
 		Name: "tweet.fields",
 		Help: `
-List optional Tweet field parameters.
+List of optional Tweet field parameters.
 
 By default, tweet objects are returned with a minimal set of default
 fields (ID and text). Additional fields can be requested in the query.
@@ -73,7 +73,7 @@ The following field tags are available:
 	{
 		Name: "user.fields",
 		Help: `
-List optional User field parameters.
+List of optional User field parameters.
 
 By default, user objects are returned with a minimal set of default
 fields (ID, name, and username). Additional fields can be requested in
@@ -90,7 +90,7 @@ The following field tags are available:
 	{
 		Name: "poll.fields",
 		Help: `
-List optional Poll field parameters.
+List of optional Poll field parameters.
 
 By default, poll objects are returned with a minimal set of default
 fields (ID and options). Additional fields can be requested in
@@ -102,6 +102,22 @@ The following field tags are available:
   duration_minutes
   end_datetime
   voting_status
+`,
+	},
+	{
+		Name: "media.fields",
+		Help: `
+List of optional Media field parameters.
+
+By default, media objects are returned with a minimal set of default
+fields (media_key and type). Additional fields can be requested in
+the query. Use the syntax "media:name", e.g., "media:width".
+
+The following field tags are available:
+
+  attachments  non_public_metrics  promoted_metrics
+  duration_ms  organic_metrics     public_metrics
+  height       preview_image_url   width
 `,
 	},
 }
