@@ -27,6 +27,7 @@ type Config struct {
 
 	// Non-persistent fields.
 	filePath string
+	AuthUser string                             `yaml:"-"`
 	Log      func(tag jhttp.LogTag, msg string) `yaml:"-"`
 	LogMask  jhttp.LogTag                       `yaml:"-"`
 }
@@ -34,8 +35,16 @@ type Config struct {
 // User carries an access token for an individual user.
 type User struct {
 	Username string `yaml:"username"`
-	Token    string `yaml:"access_token"`
-	Secret   string `yaml:"access_secret"`
+	Token    string `yaml:"token"`
+	Secret   string `yaml:"secret"`
+}
+
+// NewClient returns a new Twitter client from selected settings.
+func (c *Config) NewClient() (*twitter.Client, error) {
+	if c.AuthUser != "" {
+		return c.NewUserClient(c.AuthUser)
+	}
+	return c.NewBearerClient()
 }
 
 // NewBearerClient returns a new Twitter client with a bearer token.

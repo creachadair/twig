@@ -18,7 +18,8 @@ import (
 
 var (
 	configFile = "$HOME/.config/twig/config.yml"
-	logLevel   = 0
+	logLevel   int
+	authUser   string
 
 	root = &command.C{
 		Name:  filepath.Base(os.Args[0]),
@@ -37,6 +38,7 @@ var (
 				}
 				cfg.LogMask = jhttp.LogTag(logLevel)
 			}
+			cfg.AuthUser = authUser
 			ctx.Config = cfg
 			return nil
 		},
@@ -53,6 +55,7 @@ var (
 func init() {
 	root.Flags.StringVar(&configFile, "config", configFile, "Configuration file path")
 	root.Flags.IntVar(&logLevel, "log-level", 0, "Verbose client logging level (log tag mask)")
+	root.Flags.StringVar(&authUser, "auth-user", authUser, "Authenticate with user context")
 }
 
 func main() {

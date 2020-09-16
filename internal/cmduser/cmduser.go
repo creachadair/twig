@@ -28,7 +28,7 @@ As a special case, :field is shorthand for "user:field".
 			return command.FailWithUsage(ctx, args)
 		}
 
-		cli, err := ctx.Config.(*config.Config).NewBearerClient()
+		cli, err := ctx.Config.(*config.Config).NewClient()
 		if err != nil {
 			return fmt.Errorf("creating client: %w", err)
 		}
