@@ -6,6 +6,6 @@ require (
 	github.com/creachadair/atomicfile v0.2.1
 	github.com/creachadair/command v0.0.0-20200910004628-e48505ecfece
 	github.com/creachadair/jhttp v0.0.0-20200904162927-47a1bd1784c7
-	github.com/creachadair/twitter v0.0.0-20200916231101-cd6927772484
+	github.com/creachadair/twitter v0.0.0-20200917201615-5921a0040369
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
 )
