@@ -11,8 +11,8 @@ import (
 
 	"github.com/creachadair/atomicfile"
 	"github.com/creachadair/jhttp"
+	"github.com/creachadair/jhttp/auth"
 	"github.com/creachadair/twitter"
-	"github.com/creachadair/twitter/auth"
 	yaml "gopkg.in/yaml.v3"
 )
 
