@@ -66,7 +66,7 @@ func (c *Config) NewBearerClient() (*twitter.Client, error) {
 func (c *Config) NewUserClient(user string) (*twitter.Client, error) {
 	u := c.FindUsername(user)
 	if u == nil {
-		return nil, fmt.Errorf("no access token foundfor user %q", user)
+		return nil, fmt.Errorf("no access token found for user %q", user)
 	}
 	cfg := auth.Config{APIKey: c.APIKey, APISecret: c.APISecret}
 	return twitter.NewClient(&jhttp.Client{
