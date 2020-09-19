@@ -20,7 +20,30 @@ var Command = &command.C{
 	Help: "Commands to create and manipulate tweets",
 	Commands: []*command.C{
 		cmdCreate,
-		cmdDelete,
+		{
+			Name:  "delete",
+			Usage: "id",
+			Help:  "Delete the tweet with the specified ID.",
+			Run: runWithID(func(id string) ostatus.Query {
+				return ostatus.Delete(id, nil)
+			}),
+		},
+		{
+			Name:  "like",
+			Usage: "id",
+			Help:  "Like the tweet with the specified ID.",
+			Run: runWithID(func(id string) ostatus.Query {
+				return ostatus.Like(id, nil)
+			}),
+		},
+		{
+			Name:  "unlike",
+			Usage: "id",
+			Help:  "Un-like the tweet with the specified ID.",
+			Run: runWithID(func(id string) ostatus.Query {
+				return ostatus.Unlike(id, nil)
+			}),
+		},
 	},
 }
 
@@ -70,12 +93,8 @@ var cmdCreate = &command.C{
 	},
 }
 
-var cmdDelete = &command.C{
-	Name:  "delete",
-	Usage: "id",
-	Help:  "Delete the tweet with the specified ID.",
-
-	Run: func(ctx *command.Context, args []string) error {
+func runWithID(newQuery func(id string) ostatus.Query) func(*command.Context, []string) error {
+	return func(ctx *command.Context, args []string) error {
 		if len(args) != 1 {
 			return command.FailWithUsage(ctx, args)
 		}
@@ -88,7 +107,7 @@ var cmdDelete = &command.C{
 			return fmt.Errorf("creating client: %w", err)
 		}
 
-		rsp, err := ostatus.Delete(args[0], nil).Invoke(context.Background(), cli)
+		rsp, err := newQuery(args[0]).Invoke(context.Background(), cli)
 		if err != nil {
 			return err
 		}
@@ -100,5 +119,5 @@ var cmdDelete = &command.C{
 		}
 		fmt.Println(string(data))
 		return nil
-	},
+	}
 }
