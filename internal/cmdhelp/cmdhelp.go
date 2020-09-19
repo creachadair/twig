@@ -150,7 +150,7 @@ When searching for tweets, the following query terms are available.
 
 - To match tweets with various features:
     Links:     has:links         # tweets containing at least one URL
-    Hashtags:  has:hashtag       # tweets containing at least one #hashtag
+    Hashtags:  has:hashtags      # tweets containing at least one #hashtag
     Mentions:  has:mentions      # tweets containing at least one @mention
     Media:     has:media, has:images, has:videos
 
