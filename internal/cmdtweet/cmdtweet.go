@@ -1,6 +1,6 @@
 // Copyright (C) 2020 Michael J. Fromberger. All Rights Reserved.
 
-package cmdstatus
+package cmdtweet
 
 import (
 	"context"
@@ -16,10 +16,10 @@ import (
 )
 
 var Command = &command.C{
-	Name: "status",
+	Name: "tweet",
 	Help: "Commands to create and manipulate tweets",
 	Commands: []*command.C{
-		cmdUpdate,
+		cmdCreate,
 		cmdDelete,
 	},
 }
@@ -30,14 +30,14 @@ var (
 )
 
 func init() {
-	cmdUpdate.Flags.StringVar(&inReplyTo, "reply-to", "",
+	cmdCreate.Flags.StringVar(&inReplyTo, "reply-to", "",
 		"Reply to this tweet ID")
-	cmdUpdate.Flags.BoolVar(&autoPopReply, "auto-reply", false,
+	cmdCreate.Flags.BoolVar(&autoPopReply, "auto-reply", false,
 		"Automatically populate reply based on mentions")
 }
 
-var cmdUpdate = &command.C{
-	Name:  "update",
+var cmdCreate = &command.C{
+	Name:  "create",
 	Usage: "text...",
 	Help:  `Create a new tweet from the given text.`,
 
