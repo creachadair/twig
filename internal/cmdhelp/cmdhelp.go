@@ -122,4 +122,60 @@ The following field tags are available:
   height       preview_image_url   width
 `,
 	},
+	{
+		Name: "search-query",
+		Help: `
+Help on search query terms.
+
+When searching for tweets, the following query terms are available.
+
+- Unquoted words or quoted phrases define search terms.
+    Examples:  cat, election, "free bird", 👀
+    Note:      Emoji work as search terms.
+
+- Mentions of a specific user:  @username
+    Tweets authored by a user:  from:username
+    Replies to specific user:   to:username
+
+- References to a specific hashtag:  #hashtag
+
+- Multiple terms match the conjunction (AND) of terms.
+    Examples:  cat apple     # matches tweets with "cat" and "apple"
+
+- To match a disjunction of terms, use OR.
+    Examples:  cat OR apple  # matches tweets with "cat" or "apple" (or both)
+
+- To negate a term, prefix it with "-".
+    Examples:  -cat food     # matches tweets with "food" but without "cat"
+
+- To match tweets with various features:
+    Links:     has:links         # tweets containing at least one URL
+    Hashtags:  has:hashtag       # tweets containing at least one #hashtag
+    Mentions:  has:mentions      # tweets containing at least one @mention
+    Media:     has:media, has:images, has:videos
+
+- To match tweets containing a particular URL, use "url:XXX".
+    Example:  url:https://www.google.com
+    Note:     Either the shortened URL (t.co) or expanded URL works.
+
+- To match tweets in a given thread ID, use:  "conversation_id:ID"
+
+- To match retweets of a given user, use:  "retweets_of:username"
+    Note: User ID also works.
+
+- To match tweets in a given language by two-letter code:  lang:XX
+    See: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+
+- To match retweets (not including quotes):  is:retweet
+
+- To match tweets written by a verified user:  is:verified
+
+- Use parentheses for grouping.
+    Example: (cat OR dog) -is:retweet @jack
+    Means:   Tweets containing "cat" or "dog", excluding retweets, mentioning @jack.
+
+See also:
+  https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-rule
+`,
+	},
 }
