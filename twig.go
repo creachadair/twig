@@ -13,9 +13,10 @@ import (
 	"github.com/creachadair/jhttp"
 	"github.com/creachadair/twig/config"
 	"github.com/creachadair/twig/internal/cmdhelp"
+	"github.com/creachadair/twig/internal/cmdlookup"
 	"github.com/creachadair/twig/internal/cmdrules"
+	"github.com/creachadair/twig/internal/cmdsearch"
 	"github.com/creachadair/twig/internal/cmdstatus"
-	"github.com/creachadair/twig/internal/cmdtweet"
 	"github.com/creachadair/twig/internal/cmduser"
 )
 
@@ -47,7 +48,8 @@ var (
 		},
 
 		Commands: append([]*command.C{
-			cmdtweet.Command,
+			cmdlookup.Command,
+			cmdsearch.Command,
 			cmduser.Command,
 			cmdrules.Command,
 			cmdstatus.Command,
