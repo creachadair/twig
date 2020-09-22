@@ -16,6 +16,7 @@ import (
 	"github.com/creachadair/twig/internal/cmdlookup"
 	"github.com/creachadair/twig/internal/cmdrules"
 	"github.com/creachadair/twig/internal/cmdsearch"
+	"github.com/creachadair/twig/internal/cmdtimeline"
 	"github.com/creachadair/twig/internal/cmdtweet"
 	"github.com/creachadair/twig/internal/cmduser"
 )
@@ -53,6 +54,7 @@ var (
 			cmduser.Command,
 			cmdrules.Command,
 			cmdtweet.Command,
+			cmdtimeline.Command,
 			cmdhelp.Command,
 		}, cmdhelp.Topics...),
 	}
