@@ -83,8 +83,8 @@ var cmdCreate = &command.C{
 			return err
 		}
 		data, err := json.Marshal(struct {
-			D *types.Tweet `json:"data"`
-		}{D: rsp.Tweet})
+			D []*types.Tweet `json:"data"`
+		}{D: rsp.Tweets})
 		if err != nil {
 			return err
 		}
@@ -112,8 +112,8 @@ func runWithID(newQuery func(id string) ostatus.Query) func(*command.Context, []
 			return err
 		}
 		data, err := json.Marshal(struct {
-			D *types.Tweet `json:"data"`
-		}{D: rsp.Tweet})
+			D []*types.Tweet `json:"data"`
+		}{D: rsp.Tweets})
 		if err != nil {
 			return err
 		}
