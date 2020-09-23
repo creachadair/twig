@@ -19,7 +19,7 @@ var Command = &command.C{
 	Commands: []*command.C{
 		{
 			Name:  "user",
-			Usage: "username/id",
+			Usage: "username/id [tweet.fields...]",
 			Help:  "Fetch the user timeline for the given user.",
 			Run: runWithID(func(id string) ostatus.TimelineQuery {
 				return ostatus.UserTimeline(id, &opts)
@@ -27,7 +27,7 @@ var Command = &command.C{
 		},
 		{
 			Name:  "home",
-			Usage: "username/id",
+			Usage: "username/id [tweet.fields...]",
 			Help:  "Fetch the home timeline for the given user.",
 			Run: runWithID(func(id string) ostatus.TimelineQuery {
 				return ostatus.HomeTimeline(id, &opts)
@@ -35,7 +35,7 @@ var Command = &command.C{
 		},
 		{
 			Name:  "mentions",
-			Usage: "username/id",
+			Usage: "username/id [tweet.fields...]",
 			Help:  "Fetch the mentions timeline for the given user.",
 			Run: runWithID(func(id string) ostatus.TimelineQuery {
 				return ostatus.MentionsTimeline(id, &opts)
@@ -49,6 +49,8 @@ var opts ostatus.TimelineOpts
 func init() {
 	Command.Flags.BoolVar(&opts.ByID, "id", false, "Resolve user by ID")
 	Command.Flags.IntVar(&opts.MaxResults, "max-results", 0, "Maximum results to fetch")
+	Command.Flags.BoolVar(&opts.IncludeRetweets, "include-retweets", false, "Include retweets")
+	Command.Flags.BoolVar(&opts.ExcludeReplies, "exclude-replies", false, "Exclude replies")
 }
 
 func runWithID(newQuery func(id string) ostatus.TimelineQuery) func(*command.Context, []string) error {
