@@ -5,7 +5,6 @@ package cmdtimeline
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 
 	"github.com/creachadair/command"
@@ -54,11 +53,11 @@ func init() {
 
 func runWithID(newQuery func(id string) ostatus.TimelineQuery) func(*command.Context, []string) error {
 	return func(ctx *command.Context, args []string) error {
-		if len(args) != 1 {
-			return command.FailWithUsage(ctx, args)
-		}
-		if args[0] == "" {
-			return errors.New("empty user/id string")
+		rest, err := config.ParseParams(args, &opts.Optional)
+		if err != nil {
+			return err
+		} else if len(rest) != 1 || rest[0] == "" {
+			return command.FailWithUsage(ctx, rest)
 		}
 
 		cli, err := ctx.Config.(*config.Config).NewClient()

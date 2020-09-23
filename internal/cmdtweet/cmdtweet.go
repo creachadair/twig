@@ -65,7 +65,12 @@ var cmdCreate = &command.C{
 	Help:  `Create a new tweet from the given text.`,
 
 	Run: func(ctx *command.Context, args []string) error {
-		text := strings.TrimSpace(strings.Join(args, " "))
+		var opts types.TweetFields
+		rest, err := config.ParseParams(args, &opts)
+		if err != nil {
+			return err
+		}
+		text := strings.TrimSpace(strings.Join(rest, " "))
 		if text == "" {
 			return errors.New("empty status update")
 		}
@@ -78,6 +83,7 @@ var cmdCreate = &command.C{
 		rsp, err := ostatus.Create(text, &ostatus.CreateOpts{
 			InReplyTo:         inReplyTo,
 			AutoPopulateReply: autoPopReply,
+			Optional:          opts,
 		}).Invoke(context.Background(), cli)
 		if err != nil {
 			return err
@@ -95,11 +101,8 @@ var cmdCreate = &command.C{
 
 func runWithID(newQuery func(id string) ostatus.Query) func(*command.Context, []string) error {
 	return func(ctx *command.Context, args []string) error {
-		if len(args) != 1 {
+		if len(args) != 1 || args[0] == "" {
 			return command.FailWithUsage(ctx, args)
-		}
-		if args[0] == "" {
-			return errors.New("empty ID string")
 		}
 
 		cli, err := ctx.Config.(*config.Config).NewClient()
