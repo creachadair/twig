@@ -3,10 +3,34 @@
 package config
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/creachadair/twitter/types"
 )
+
+// OptionSetter represents the ability to set named optional Boolean options.
+// This interface is satisfied by the option types from the twitter package.
+type OptionSetter interface {
+	Set(string, bool) bool
+}
+
+// ParseParams parsees optional parameters by name into an options struct.
+// Parameter names are prefixed with a colon, for example ":entities".
+// It returns the unconsumed arguments or reports a descriptive error for an
+// unknown parameter name.
+func ParseParams(args []string, opt OptionSetter) ([]string, error) {
+	var rest []string
+	for _, arg := range args {
+		trim := strings.TrimPrefix(arg, ":")
+		if trim == arg {
+			rest = append(rest, arg)
+		} else if !opt.Set(trim, true) {
+			return nil, fmt.Errorf("unknown parameter: %q", arg)
+		}
+	}
+	return rest, nil
+}
 
 // ParseArgs decodes an argument list consisting of IDs or names mixed with
 // field specifiers and expansions. A field spec has the form "name:value",
