@@ -72,6 +72,7 @@ func (c *Config) NewUserClient(user string) (*twitter.Client, error) {
 	return twitter.NewClient(&jhttp.Client{
 		Authorize: cfg.Authorizer(u.Token, u.Secret),
 		Log:       c.Log,
+		LogMask:   c.LogMask,
 	}), nil
 }
 
