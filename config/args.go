@@ -15,7 +15,7 @@ type OptionSetter interface {
 	Set(string, bool) bool
 }
 
-// ParseParams parsees optional parameters by name into an options struct.
+// ParseParams parses optional parameters by name into an options struct.
 // Parameter names are prefixed with a colon, for example ":entities".
 // It returns the unconsumed arguments or reports a descriptive error for an
 // unknown parameter name.
