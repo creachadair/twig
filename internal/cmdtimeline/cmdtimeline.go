@@ -67,7 +67,7 @@ func runWithID(newQuery func(id string) ostatus.TimelineQuery) func(*command.Con
 			return fmt.Errorf("creating client: %w", err)
 		}
 
-		rsp, err := newQuery(args[0]).Invoke(context.Background(), cli)
+		rsp, err := newQuery(rest[0]).Invoke(context.Background(), cli)
 		if err != nil {
 			return err
 		}
