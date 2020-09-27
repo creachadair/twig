@@ -92,13 +92,19 @@ type ParsedArgs struct {
 }
 
 var expShortcut = map[string]string{
-	"tweets":        "referenced_tweets.id",
-	"ref_tweets":    "referenced_tweets.id",
-	"reply_to_user": "in_reply_to_user_id",
-	"media_keys":    "attachments.media_keys",
-	"poll_ids":      "attachments.poll_ids",
-	"place_id":      "geo.place_id",
-	"mentions":      "entities.mentions.username",
-	"ref_author":    "referenced_tweets.id.author_id",
-	"pinned_tweet":  "pinned_tweet_id",
+	"tweets":            "referenced_tweets.id",
+	"ref_tweets":        "referenced_tweets.id",
+	"referenced_tweets": "referenced_tweets.id",
+	"reply_to_user":     "in_reply_to_user_id",
+	"media_key":         "attachments.media_keys",
+	"media_keys":        "attachments.media_keys",
+	"poll_id":           "attachments.poll_ids",
+	"poll_ids":          "attachments.poll_ids",
+	"place_id":          "geo.place_id",
+	"place_ids":         "geo.place_id",
+	"mention":           "entities.mentions.username",
+	"mentions":          "entities.mentions.username",
+	"ref_author":        "referenced_tweets.id.author_id",
+	"reference_author":  "referenced_tweets.id.author_id",
+	"pinned_tweet":      "pinned_tweet_id",
 }
