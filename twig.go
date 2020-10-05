@@ -13,6 +13,7 @@ import (
 	"github.com/creachadair/jhttp"
 	"github.com/creachadair/twig/config"
 	"github.com/creachadair/twig/internal/cmdhelp"
+	"github.com/creachadair/twig/internal/cmdlist"
 	"github.com/creachadair/twig/internal/cmdlookup"
 	"github.com/creachadair/twig/internal/cmdrules"
 	"github.com/creachadair/twig/internal/cmdsearch"
@@ -55,6 +56,7 @@ var (
 			cmdrules.Command,
 			cmdtweet.Command,
 			cmdtimeline.Command,
+			cmdlist.Command,
 			cmdhelp.Command,
 		}, cmdhelp.Topics...),
 	}
