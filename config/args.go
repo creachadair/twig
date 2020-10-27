@@ -49,7 +49,7 @@ func ParseArgs(args []string, dtype string) ParsedArgs {
 			if sc, ok := expShortcut[exp]; ok {
 				exp = sc
 			}
-			expand = append(expand, exp)
+			expand.Set(exp, true)
 			continue
 		}
 
@@ -73,7 +73,7 @@ func ParseArgs(args []string, dtype string) ParsedArgs {
 		}
 		fieldMap[parts[0]] = append(fieldMap[parts[0]], parts[1])
 	}
-	if len(expand) != 0 {
+	if expand != (types.Expansions{}) {
 		parsed.Fields = append(parsed.Fields, expand)
 	}
 	for key, vals := range fieldMap {
