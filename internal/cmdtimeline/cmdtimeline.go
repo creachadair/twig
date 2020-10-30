@@ -19,7 +19,7 @@ var Command = &command.C{
 	Commands: []*command.C{
 		{
 			Name:  "user",
-			Usage: "username/id [tweet.fields...]",
+			Usage: "[username/id] [tweet.fields...]",
 			Help:  "Fetch the user timeline for the given user.",
 			Run: runWithID(func(id string) ostatus.TimelineQuery {
 				return ostatus.UserTimeline(id, &opts)
@@ -27,7 +27,7 @@ var Command = &command.C{
 		},
 		{
 			Name:  "home",
-			Usage: "username/id [tweet.fields...]",
+			Usage: "[username/id] [tweet.fields...]",
 			Help:  "Fetch the home timeline for the given user.",
 			Run: runWithID(func(id string) ostatus.TimelineQuery {
 				return ostatus.HomeTimeline(id, &opts)
@@ -35,7 +35,7 @@ var Command = &command.C{
 		},
 		{
 			Name:  "mentions",
-			Usage: "username/id [tweet.fields...]",
+			Usage: "[username/id] [tweet.fields...]",
 			Help:  "Fetch the mentions timeline for the given user.",
 			Run: runWithID(func(id string) ostatus.TimelineQuery {
 				return ostatus.MentionsTimeline(id, &opts)
@@ -55,10 +55,18 @@ func init() {
 
 func runWithID(newQuery func(id string) ostatus.TimelineQuery) func(*command.Context, []string) error {
 	return func(ctx *command.Context, args []string) error {
+		cfg := ctx.Config.(*config.Config)
+		user := cfg.AuthUser
+
 		rest, err := config.ParseParams(args, &opts.Optional)
 		if err != nil {
 			return err
-		} else if len(rest) != 1 || rest[0] == "" {
+		} else if len(rest) > 1 {
+			return command.FailWithUsage(ctx, rest)
+		} else if len(rest) == 1 {
+			user = rest[0]
+		}
+		if user == "" {
 			return command.FailWithUsage(ctx, rest)
 		}
 
@@ -67,7 +75,7 @@ func runWithID(newQuery func(id string) ostatus.TimelineQuery) func(*command.Con
 			return fmt.Errorf("creating client: %w", err)
 		}
 
-		rsp, err := newQuery(rest[0]).Invoke(context.Background(), cli)
+		rsp, err := newQuery(user).Invoke(context.Background(), cli)
 		if err != nil {
 			return err
 		}
