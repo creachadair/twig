@@ -44,6 +44,22 @@ var Command = &command.C{
 				return ostatus.Unlike(id, nil)
 			}),
 		},
+		{
+			Name:  "retweet",
+			Usage: "id",
+			Help:  "Retweet the tweet with the specified ID.",
+			Run: runWithID(func(id string) ostatus.Query {
+				return ostatus.Retweet(id, nil)
+			}),
+		},
+		{
+			Name:  "unretweet",
+			Usage: "id",
+			Help:  "Un-retweet the tweet with the specified ID.",
+			Run: runWithID(func(id string) ostatus.Query {
+				return ostatus.Unretweet(id, nil)
+			}),
+		},
 	},
 }
 
