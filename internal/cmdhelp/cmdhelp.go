@@ -178,4 +178,22 @@ See also:
   https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-rule
 `,
 	},
+	{
+		Name: "log-level",
+		Help: `
+Help for the -log-level command-line flag.
+
+Setting the -log-level flag to a positive integer enables debug logging
+for calls to the Twitter API. The value of the flag is a bit mask, comprising
+the sum of terms from the following list:
+
+  1 -- the request URL sent to the API
+  2 -- the Authorization header sent to the API
+  4 -- the HTTP response from the API
+  8 -- the JSON response body from the API (on success)
+
+For example, to log the request URL and the response body, set -log-level 9.
+To log all of these items, set -log-level 15.
+`,
+	},
 }
