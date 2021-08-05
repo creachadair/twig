@@ -27,18 +27,18 @@ If the results span multiple pages, use -page to set the
 page token to resume searching from.
 `,
 
-	Run: func(ctx *command.Context, args []string) error {
+	Run: func(env *command.Env, args []string) error {
 		if searchQuery == "" {
-			fmt.Fprintln(ctx, "Error: a search -query must be set")
-			return command.FailWithUsage(ctx, args)
+			fmt.Fprintln(env, "Error: a search -query must be set")
+			return command.FailWithUsage(env, args)
 		}
 		parsed := config.ParseArgs(args, "tweet")
 		if len(parsed.Keys) != 0 {
-			fmt.Fprintf(ctx, "Error: extra arguments after query %v\n", parsed.Keys)
-			return command.FailWithUsage(ctx, args)
+			fmt.Fprintf(env, "Error: extra arguments after query %v\n", parsed.Keys)
+			return command.FailWithUsage(env, args)
 		}
 
-		cli, err := ctx.Config.(*config.Config).NewClient()
+		cli, err := env.Config.(*config.Config).NewClient()
 		if err != nil {
 			return fmt.Errorf("creating client: %w", err)
 		}

@@ -23,14 +23,14 @@ A field specifier has the form type:field, e.g., "user:entities".
 As a special case, :field is shorthand for "user:field".
 `,
 
-	Run: func(ctx *command.Context, args []string) error {
+	Run: func(env *command.Env, args []string) error {
 		parsed := config.ParseArgs(args, "user")
 		if len(parsed.Keys) == 0 {
-			fmt.Fprintln(ctx, "Error: no usernames or IDs were specified")
-			return command.FailWithUsage(ctx, args)
+			fmt.Fprintln(env, "Error: no usernames or IDs were specified")
+			return command.FailWithUsage(env, args)
 		}
 
-		cli, err := ctx.Config.(*config.Config).NewClient()
+		cli, err := env.Config.(*config.Config).NewClient()
 		if err != nil {
 			return fmt.Errorf("creating client: %w", err)
 		}

@@ -80,7 +80,7 @@ var cmdCreate = &command.C{
 	Usage: "text...",
 	Help:  `Create a new tweet from the given text.`,
 
-	Run: func(ctx *command.Context, args []string) error {
+	Run: func(env *command.Env, args []string) error {
 		var opts types.TweetFields
 		rest, err := config.ParseParams(args, &opts)
 		if err != nil {
@@ -91,7 +91,7 @@ var cmdCreate = &command.C{
 			return errors.New("empty status update")
 		}
 
-		cli, err := ctx.Config.(*config.Config).NewClient()
+		cli, err := env.Config.(*config.Config).NewClient()
 		if err != nil {
 			return fmt.Errorf("creating client: %w", err)
 		}
@@ -115,13 +115,13 @@ var cmdCreate = &command.C{
 	},
 }
 
-func runWithID(newQuery func(id string) ostatus.Query) func(*command.Context, []string) error {
-	return func(ctx *command.Context, args []string) error {
+func runWithID(newQuery func(id string) ostatus.Query) func(*command.Env, []string) error {
+	return func(env *command.Env, args []string) error {
 		if len(args) != 1 || args[0] == "" {
-			return command.FailWithUsage(ctx, args)
+			return command.FailWithUsage(env, args)
 		}
 
-		cli, err := ctx.Config.(*config.Config).NewClient()
+		cli, err := env.Config.(*config.Config).NewClient()
 		if err != nil {
 			return fmt.Errorf("creating client: %w", err)
 		}

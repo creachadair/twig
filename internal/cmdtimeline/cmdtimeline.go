@@ -53,24 +53,24 @@ func init() {
 	Command.Flags.BoolVar(&opts.ExcludeReplies, "exclude-replies", false, "Exclude replies")
 }
 
-func runWithID(newQuery func(id string) ostatus.TimelineQuery) func(*command.Context, []string) error {
-	return func(ctx *command.Context, args []string) error {
-		cfg := ctx.Config.(*config.Config)
+func runWithID(newQuery func(id string) ostatus.TimelineQuery) func(*command.Env, []string) error {
+	return func(env *command.Env, args []string) error {
+		cfg := env.Config.(*config.Config)
 		user := cfg.AuthUser
 
 		rest, err := config.ParseParams(args, &opts.Optional)
 		if err != nil {
 			return err
 		} else if len(rest) > 1 {
-			return command.FailWithUsage(ctx, rest)
+			return command.FailWithUsage(env, rest)
 		} else if len(rest) == 1 {
 			user = rest[0]
 		}
 		if user == "" {
-			return command.FailWithUsage(ctx, rest)
+			return command.FailWithUsage(env, rest)
 		}
 
-		cli, err := ctx.Config.(*config.Config).NewClient()
+		cli, err := env.Config.(*config.Config).NewClient()
 		if err != nil {
 			return fmt.Errorf("creating client: %w", err)
 		}

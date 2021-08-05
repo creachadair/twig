@@ -33,7 +33,7 @@ var (
 		Usage: `<command> [arguments]`,
 		Help:  `A command-line client for the Twitter API.`,
 
-		Init: func(ctx *command.Context) error {
+		Init: func(env *command.Env) error {
 			path := os.ExpandEnv(configFile)
 			cfg, err := config.Load(path)
 			if err != nil {
@@ -46,7 +46,7 @@ var (
 				cfg.LogMask = jhttp.LogTag(logLevel)
 			}
 			cfg.AuthUser = authUser
-			ctx.Config = cfg
+			env.Config = cfg
 			return nil
 		},
 
@@ -71,7 +71,7 @@ func init() {
 }
 
 func main() {
-	if err := command.Execute(root.NewContext(nil), os.Args[1:]); err != nil {
+	if err := command.Execute(root.NewEnv(nil), os.Args[1:]); err != nil {
 		if errors.Is(err, command.ErrUsage) {
 			os.Exit(2)
 		}

@@ -44,16 +44,16 @@ func init() {
 	Command.Flags.IntVar(&opts.PerPage, "page-size", 200, "Number of results per page")
 }
 
-func runWithID(newQuery func(id string) ousers.Query) func(*command.Context, []string) error {
-	return func(ctx *command.Context, args []string) error {
+func runWithID(newQuery func(id string) ousers.Query) func(*command.Env, []string) error {
+	return func(env *command.Env, args []string) error {
 		rest, err := config.ParseParams(args, &opts.Optional)
 		if err != nil {
 			return err
 		} else if len(rest) != 1 || rest[0] == "" {
-			return command.FailWithUsage(ctx, rest)
+			return command.FailWithUsage(env, rest)
 		}
 
-		cli, err := ctx.Config.(*config.Config).NewClient()
+		cli, err := env.Config.(*config.Config).NewClient()
 		if err != nil {
 			return fmt.Errorf("creating client: %w", err)
 		}
