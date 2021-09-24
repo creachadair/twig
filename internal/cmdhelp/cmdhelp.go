@@ -6,15 +6,6 @@ import (
 	"github.com/creachadair/command"
 )
 
-var Command = &command.C{
-	Name:  "help",
-	Usage: "[topic/command]",
-	Help:  `Print help for the specified command or topic.`,
-
-	CustomFlags: true,
-	Run:         command.RunHelp,
-}
-
 var Topics = []*command.C{
 	{
 		Name: "expansions",

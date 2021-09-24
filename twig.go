@@ -59,7 +59,7 @@ var (
 			cmdtweet.Command,
 			cmdtimeline.Command,
 			cmdlist.Command,
-			cmdhelp.Command,
+			command.HelpCommand(nil),
 		}, cmdhelp.Topics...),
 	}
 )
