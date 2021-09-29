@@ -1,11 +1,11 @@
 github.com/creachadair/atomicfile v0.2.2 h1:/qnts+ZoRBH9CSxWO7VWrWlUw4J7c4/cAvAU8/h/eo0=
 github.com/creachadair/atomicfile v0.2.2/go.mod h1:BRq8Une6ckFneYXZQ+kO7p1ZZP3I2fzVzf28JxrIkBc=
-github.com/creachadair/command v0.0.0-20210924231450-e2629ca9329a h1:5M8ux41631nylaW96S662zWk3rNleJFtsNONQPXUKIw=
-github.com/creachadair/command v0.0.0-20210924231450-e2629ca9329a/go.mod h1:bAM+qFQb/KwWyCc9MLC4U1jvn3XyakqP5QRkds5T6cY=
-github.com/creachadair/jhttp v0.0.0-20201101031238-fadd981e84db h1:ZJv9zDVucp/nKeamCrdMPCRlox6E15hc0MZOqD6l/gk=
-github.com/creachadair/jhttp v0.0.0-20201101031238-fadd981e84db/go.mod h1:mI3XdRNp8s5QEb2mZtf9WwGHXXZE7melnCwwvpxV+Nc=
-github.com/creachadair/twitter v0.0.0-20210217180153-0e52bc0115f9 h1:RBuS+agJg222//3u+LUg8LoT+warItzmWKJpT4sLrTY=
-github.com/creachadair/twitter v0.0.0-20210217180153-0e52bc0115f9/go.mod h1:Uz6O4tKH04V64Jj/vMJv4BlF9yeyaqIIeLjV8bjgj+o=
+github.com/creachadair/command v0.0.0-20210928192034-e8716ad13352 h1:26PQgSNdvEV9+VNoYJE/RDClSxexJnxNHh1Sd2qBYMk=
+github.com/creachadair/command v0.0.0-20210928192034-e8716ad13352/go.mod h1:bAM+qFQb/KwWyCc9MLC4U1jvn3XyakqP5QRkds5T6cY=
+github.com/creachadair/jhttp v0.0.0-20210919181111-cbdababa237c h1:XNdm9XmtSVcUeOLGqeJOW9Du/2YwR8U754fmctYJl4g=
+github.com/creachadair/jhttp v0.0.0-20210919181111-cbdababa237c/go.mod h1:65J0yhuD3EL1u5/63Gn23BJmRuzAaA64wLijV6Pt4AU=
+github.com/creachadair/twitter v0.0.0-20210929012036-c5aecc6ab625 h1:7NrfZ1s/NDByaYyhl5KOWEsg9/2/VsJY2w9NFWX7k/Y=
+github.com/creachadair/twitter v0.0.0-20210929012036-c5aecc6ab625/go.mod h1:CwDiQ/fb6lLh9kYypeDw0EZ6g4ma5e4h1YDlCHiMgGE=
 github.com/dnaeon/go-vcr v1.0.1 h1:r8L/HqC0Hje5AXMu1ooW8oyQyOFv4GxqpL0nRP7SLLY=
 github.com/dnaeon/go-vcr v1.0.1/go.mod h1:aBB1+wY4s93YsC3HHjMBMrwTj2R9FHDzUr9KyGc8n1E=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
