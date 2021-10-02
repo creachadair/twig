@@ -2,11 +2,9 @@
 
 package cmdhelp
 
-import (
-	"github.com/creachadair/command"
-)
+import "github.com/creachadair/command"
 
-var Topics = []*command.C{
+var Topics = []command.HelpTopic{
 	{
 		Name: "expansions",
 		Help: `

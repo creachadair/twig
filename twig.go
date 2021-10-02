@@ -50,7 +50,7 @@ var (
 			return nil
 		},
 
-		Commands: append([]*command.C{
+		Commands: []*command.C{
 			cmdlookup.Command,
 			cmdsearch.Command,
 			cmduser.Command,
@@ -59,8 +59,8 @@ var (
 			cmdtweet.Command,
 			cmdtimeline.Command,
 			cmdlist.Command,
-			command.HelpCommand(nil),
-		}, cmdhelp.Topics...),
+			command.HelpCommand(cmdhelp.Topics),
+		},
 	}
 )
 
