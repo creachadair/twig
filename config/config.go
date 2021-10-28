@@ -6,7 +6,7 @@ package config
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/creachadair/atomicfile"
@@ -97,7 +97,7 @@ func (c *Config) Save() error {
 
 // Load reads in the contents of a config file from path.
 func Load(path string) (*Config, error) {
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("reading config file: %w", err)
 	}
