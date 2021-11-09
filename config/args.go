@@ -77,9 +77,9 @@ func ParseArgs(args []string, dtype string) ParsedArgs {
 		parsed.Fields = append(parsed.Fields, expand)
 	}
 	for key, vals := range fieldMap {
-		parsed.Fields = append(parsed.Fields, types.MiscFields{
-			Label_:  key + ".fields",
-			Values_: vals,
+		parsed.Fields = append(parsed.Fields, miscFields{
+			label:  key,
+			values: vals,
 		})
 	}
 	return parsed
@@ -108,3 +108,11 @@ var expShortcut = map[string]string{
 	"reference_author":  "referenced_tweets.id.author_id",
 	"pinned_tweet":      "pinned_tweet_id",
 }
+
+type miscFields struct {
+	label  string
+	values []string
+}
+
+func (m miscFields) Label() string    { return m.label + ".fields" }
+func (m miscFields) Values() []string { return m.values }
