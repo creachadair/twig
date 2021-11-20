@@ -71,7 +71,7 @@ func init() {
 }
 
 func main() {
-	if err := command.Execute(root.NewEnv(nil), os.Args[1:]); err != nil {
+	if err := command.Run(root.NewEnv(nil), os.Args[1:]); err != nil {
 		if errors.Is(err, command.ErrUsage) {
 			os.Exit(2)
 		}
