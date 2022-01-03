@@ -123,8 +123,9 @@ When searching for tweets, the following query terms are available.
     Note:      Emoji work as search terms.
 
 - Mentions of a specific user:  @username
-    Tweets authored by a user:  from:username
-    Replies to specific user:   to:username
+  Tweets authored by a user:    from:username
+  Replies to specific user:     to:username
+  Tweets by members of a list:  list:list-id   # at most one per query
 
 - References to a specific hashtag:  #hashtag
 
