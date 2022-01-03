@@ -155,7 +155,12 @@ When searching for tweets, the following query terms are available.
 - To match tweets in a given language by two-letter code:  lang:XX
     See: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 
-- To match retweets (not including quotes):  is:retweet
+- To match retweets (not including quotes):    is:retweet
+  To match quote tweets (tweets with comment): is:quote
+  To match only reply tweets:                  is:reply
+  To match tweets that are not promoted:       -is:nullcast
+
+  Note that "is:nullcast" can only appear negated.
 
 - To match tweets written by a verified user:  is:verified
 
