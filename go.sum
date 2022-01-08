@@ -4,8 +4,8 @@ github.com/creachadair/command v0.0.0-20211126171518-aeb2c1414eea h1:WjqNxZyQx21
 github.com/creachadair/command v0.0.0-20211126171518-aeb2c1414eea/go.mod h1:bAM+qFQb/KwWyCc9MLC4U1jvn3XyakqP5QRkds5T6cY=
 github.com/creachadair/jhttp v0.0.0-20211028173559-4246475077bb h1:tttGCEHjswR+aa5y2XoRAvEiw6r5xYBjZV0WvAqp4cg=
 github.com/creachadair/jhttp v0.0.0-20211028173559-4246475077bb/go.mod h1:65J0yhuD3EL1u5/63Gn23BJmRuzAaA64wLijV6Pt4AU=
-github.com/creachadair/twitter v0.0.0-20211128061253-1d42904db11d h1:ndBDmiEgtGhRCsD2Gt565UKEz5a7COrr03Q71/4QZ7o=
-github.com/creachadair/twitter v0.0.0-20211128061253-1d42904db11d/go.mod h1:Mt4UiESWn934skey6EofgU1Wj87fdUZ3aR27bbJPeUY=
+github.com/creachadair/twitter v0.0.0-20220108175205-8815d3dae556 h1:0uoUBNlAHabgvl/UOjvMiXuw9lLU2HMjLa03OrqBpUM=
+github.com/creachadair/twitter v0.0.0-20220108175205-8815d3dae556/go.mod h1:Mt4UiESWn934skey6EofgU1Wj87fdUZ3aR27bbJPeUY=
 github.com/dnaeon/go-vcr v1.2.0 h1:zHCHvJYTMh1N7xnV7zf1m1GPBF9Ad0Jk/whtQ1663qI=
 github.com/dnaeon/go-vcr v1.2.0/go.mod h1:R4UdLID7HZT3taECzJs4YgbbH6PIGXB6W/sc5OLb6RQ=
 github.com/modocache/gover v0.0.0-20171022184752-b58185e213c5/go.mod h1:caMODM3PzxT8aQXRPkAt8xlV/e7d7w8GM5g0fa5F0D8=

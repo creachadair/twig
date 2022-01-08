@@ -9,7 +9,7 @@ import (
 
 	"github.com/creachadair/command"
 	"github.com/creachadair/twig/config"
-	"github.com/creachadair/twitter/ousers"
+	"github.com/creachadair/twitter/olists"
 	"github.com/creachadair/twitter/types"
 )
 
@@ -21,22 +21,22 @@ var Command = &command.C{
 			Name:  "followers",
 			Usage: "username/id [user.fields...]",
 			Help:  "Fetch the followers of the specified user.",
-			Run: runWithID(func(id string) ousers.Query {
-				return ousers.Followers(id, &opts)
+			Run: runWithID(func(id string) olists.Query {
+				return olists.Followers(id, &opts)
 			}),
 		},
 		{
 			Name:  "following",
 			Usage: "username/id [user.fields...]",
 			Help:  "Fetch the users following the specified user.",
-			Run: runWithID(func(id string) ousers.Query {
-				return ousers.Following(id, &opts)
+			Run: runWithID(func(id string) olists.Query {
+				return olists.Following(id, &opts)
 			}),
 		},
 	},
 }
 
-var opts ousers.FollowOpts
+var opts olists.FollowOpts
 
 func init() {
 	Command.Flags.BoolVar(&opts.ByID, "id", false, "Resolve user by ID")
@@ -44,7 +44,7 @@ func init() {
 	Command.Flags.IntVar(&opts.PerPage, "page-size", 200, "Number of results per page")
 }
 
-func runWithID(newQuery func(id string) ousers.Query) func(*command.Env, []string) error {
+func runWithID(newQuery func(id string) olists.Query) func(*command.Env, []string) error {
 	return func(env *command.Env, args []string) error {
 		rest, err := config.ParseParams(args, &opts.Optional)
 		if err != nil {
