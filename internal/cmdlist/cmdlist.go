@@ -7,9 +7,11 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"strings"
 
 	"github.com/creachadair/command"
 	"github.com/creachadair/twig/config"
+	"github.com/creachadair/twitter/lists"
 	"github.com/creachadair/twitter/olists"
 	"github.com/creachadair/twitter/types"
 )
@@ -57,6 +59,95 @@ var Command = &command.C{
 				return olists.Subscribers(id, newListOpts())
 			}),
 		},
+		{
+			Name:  "create",
+			Usage: "name [description...]",
+			Help:  "Create a new list with the given name and description.",
+			SetFlags: func(_ *command.Env, fs *flag.FlagSet) {
+				fs.BoolVar(&opts.private, "private", false, "Set list to private")
+			},
+			Run: func(env *command.Env, args []string) error {
+				if len(args) == 0 {
+					return command.FailWithUsage(env, args)
+				}
+				name := args[0]
+				desc := strings.Join(args[1:], " ")
+
+				cli, err := env.Config.(*config.Config).NewClient()
+				if err != nil {
+					return fmt.Errorf("creating client: %w", err)
+				}
+
+				rsp, err := lists.Create(name, desc, opts.private).Invoke(context.Background(), cli)
+				if err != nil {
+					return err
+				}
+				data, err := json.Marshal(rsp.Lists[0])
+				if err != nil {
+					return err
+				}
+				fmt.Println(string(data))
+				return nil
+			},
+		},
+		{
+			Name:  "delete",
+			Usage: "id",
+			Help:  "Delete the list with the specified id.",
+			Run: func(env *command.Env, args []string) error {
+				if len(args) == 0 {
+					return command.FailWithUsage(env, args)
+				}
+				cli, err := env.Config.(*config.Config).NewClient()
+				if err != nil {
+					return fmt.Errorf("creating client: %w", err)
+				}
+
+				ok, err := lists.Delete(args[0]).Invoke(context.Background(), cli)
+				if err != nil {
+					return err
+				}
+				fmt.Printf("deleted: %v\n", ok)
+				return nil
+			},
+		},
+		{
+			Name:  "update",
+			Usage: "id",
+			Help:  "Update the list with the specified id.",
+			SetFlags: func(_ *command.Env, fs *flag.FlagSet) {
+				fs.BoolVar(&opts.private, "private", false, "Whether the list should be private")
+				fs.String("name", "", "The new name of the list")
+				fs.String("description", "", "The new description of the list")
+			},
+			Run: func(env *command.Env, args []string) error {
+				if len(args) == 0 {
+					return command.FailWithUsage(env, args)
+				}
+				var uopts lists.UpdateOpts
+				if name, ok := isSet(env.Command.Flags, "name"); ok {
+					uopts.SetName(name)
+				}
+				if desc, ok := isSet(env.Command.Flags, "description"); ok {
+					uopts.SetDescription(desc)
+				}
+				if _, ok := isSet(env.Command.Flags, "private"); ok {
+					uopts.SetPrivate(opts.private)
+				}
+
+				cli, err := env.Config.(*config.Config).NewClient()
+				if err != nil {
+					return fmt.Errorf("creating client: %w", err)
+				}
+
+				ok, err := lists.Update(args[0], uopts).Invoke(context.Background(), cli)
+				if err != nil {
+					return err
+				}
+				fmt.Printf("updated: %v\n", ok)
+				return nil
+			},
+		},
 	},
 }
 
@@ -65,6 +156,18 @@ var opts struct {
 	pageToken string
 	pageSize  int
 	fields    types.UserFields
+
+	private bool
+}
+
+func isSet(fs flag.FlagSet, name string) (s string, ok bool) {
+	fs.Visit(func(f *flag.Flag) {
+		if !ok && f.Name == name {
+			s = f.Value.String()
+			ok = true
+		}
+	})
+	return
 }
 
 func newFollowOpts() *olists.FollowOpts {
