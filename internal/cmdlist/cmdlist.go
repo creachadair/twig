@@ -5,6 +5,7 @@ package cmdlist
 import (
 	"context"
 	"encoding/json"
+	"flag"
 	"fmt"
 
 	"github.com/creachadair/command"
@@ -16,13 +17,20 @@ import (
 var Command = &command.C{
 	Name: "list",
 	Help: "Commands to list followers and following.",
+
+	SetFlags: func(_ *command.Env, fs *flag.FlagSet) {
+		fs.BoolVar(&opts.byID, "id", false, "Resolve user by ID")
+		fs.StringVar(&opts.pageToken, "page-token", "", "Page token")
+		fs.IntVar(&opts.pageSize, "page-size", 200, "Number of results per page")
+	},
+
 	Commands: []*command.C{
 		{
 			Name:  "followers",
 			Usage: "username/id [user.fields...]",
 			Help:  "Fetch the followers of the specified user.",
 			Run: runWithID(func(id string) olists.Query {
-				return olists.Followers(id, &opts)
+				return olists.Followers(id, newFollowOpts())
 			}),
 		},
 		{
@@ -30,23 +38,55 @@ var Command = &command.C{
 			Usage: "username/id [user.fields...]",
 			Help:  "Fetch the users following the specified user.",
 			Run: runWithID(func(id string) olists.Query {
-				return olists.Following(id, &opts)
+				return olists.Following(id, newFollowOpts())
+			}),
+		},
+		{
+			Name:  "members",
+			Usage: "list-id [user.fields...]",
+			Help:  "Fetch the members of the specified list.",
+			Run: runWithID(func(id string) olists.Query {
+				return olists.Members(id, newListOpts())
+			}),
+		},
+		{
+			Name:  "subscribers",
+			Usage: "list-id [user.fields...]",
+			Help:  "Fetch the subscribers to the specified list.",
+			Run: runWithID(func(id string) olists.Query {
+				return olists.Subscribers(id, newListOpts())
 			}),
 		},
 	},
 }
 
-var opts olists.FollowOpts
+var opts struct {
+	byID      bool
+	pageToken string
+	pageSize  int
+	fields    types.UserFields
+}
 
-func init() {
-	Command.Flags.BoolVar(&opts.ByID, "id", false, "Resolve user by ID")
-	Command.Flags.StringVar(&opts.PageToken, "page-token", "", "Page token")
-	Command.Flags.IntVar(&opts.PerPage, "page-size", 200, "Number of results per page")
+func newFollowOpts() *olists.FollowOpts {
+	return &olists.FollowOpts{
+		ByID:      opts.byID,
+		PageToken: opts.pageToken,
+		PerPage:   opts.pageSize,
+		Optional:  opts.fields,
+	}
+}
+
+func newListOpts() *olists.ListOpts {
+	return &olists.ListOpts{
+		PageToken: opts.pageToken,
+		PerPage:   opts.pageSize,
+		Optional:  opts.fields,
+	}
 }
 
 func runWithID(newQuery func(id string) olists.Query) func(*command.Env, []string) error {
 	return func(env *command.Env, args []string) error {
-		rest, err := config.ParseParams(args, &opts.Optional)
+		rest, err := config.ParseParams(args, &opts.fields)
 		if err != nil {
 			return err
 		} else if len(rest) != 1 || rest[0] == "" {
@@ -62,6 +102,7 @@ func runWithID(newQuery func(id string) olists.Query) func(*command.Env, []strin
 		if err != nil {
 			return err
 		}
+
 		type meta struct {
 			T string `json:"next_token"`
 		}
