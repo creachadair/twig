@@ -104,22 +104,6 @@ var Command = &command.C{
 			}),
 		},
 		{
-			Name:  "members",
-			Usage: "list-id [user.fields...]",
-			Help:  "Fetch the members of the specified list.",
-			Run: runWithID(func(id string) olists.Query {
-				return olists.Members(id, newListOpts())
-			}),
-		},
-		{
-			Name:  "subscribers",
-			Usage: "list-id [user.fields...]",
-			Help:  "Fetch the subscribers to the specified list.",
-			Run: runWithID(func(id string) olists.Query {
-				return olists.Subscribers(id, newListOpts())
-			}),
-		},
-		{
 			Name:  "create",
 			Usage: "name [description...]",
 			Help:  "Create a new list with the given name and description.",
@@ -207,6 +191,22 @@ var Command = &command.C{
 				fmt.Printf("updated: %v\n", ok)
 				return nil
 			},
+		},
+		{
+			Name:  "members",
+			Usage: "list-id [user.fields...]",
+			Help:  "Fetch the members of the specified list.",
+			Run: runWithID(func(id string) olists.Query {
+				return olists.Members(id, newListOpts())
+			}),
+		},
+		{
+			Name:  "subscribers",
+			Usage: "list-id [user.fields...]",
+			Help:  "Fetch the subscribers to the specified list.",
+			Run: runWithID(func(id string) olists.Query {
+				return olists.Subscribers(id, newListOpts())
+			}),
 		},
 	},
 }
