@@ -47,7 +47,7 @@ var Command = &command.C{
 			}),
 		},
 		{
-			Name:  "followers",
+			Name:  "user-followers",
 			Usage: "username/id [user.fields...]",
 			Help:  "Fetch the followers of the specified user.",
 			Run: runWithID(func(id string) olists.Query {
@@ -55,7 +55,7 @@ var Command = &command.C{
 			}),
 		},
 		{
-			Name:  "following",
+			Name:  "user-following",
 			Usage: "username/id [user.fields...]",
 			Help:  "Fetch the users following the specified user.",
 			Run: runWithID(func(id string) olists.Query {
