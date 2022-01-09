@@ -266,10 +266,17 @@ func runList(newQuery func(config.ParsedArgs) lists.Query) func(*command.Env, []
 			return fmt.Errorf("creating client: %w", err)
 		}
 
+		ctx := context.Background()
+		if ids, err := config.ResolveID(ctx, cli, parsed.Keys); err != nil {
+			return fmt.Errorf("resolving users: %w", err)
+		} else {
+			parsed.Keys = ids
+		}
+
 		q := newQuery(parsed)
 		var numResults int
 		for q.HasMorePages() {
-			rsp, err := q.Invoke(context.Background(), cli)
+			rsp, err := q.Invoke(ctx, cli)
 			if err != nil {
 				return err
 			}
@@ -302,10 +309,17 @@ func runUsers(newQuery func(config.ParsedArgs) users.Query) func(*command.Env, [
 			return fmt.Errorf("creating client: %w", err)
 		}
 
+		ctx := context.Background()
+		if ids, err := config.ResolveID(ctx, cli, parsed.Keys); err != nil {
+			return fmt.Errorf("resolving users: %w", err)
+		} else {
+			parsed.Keys = ids
+		}
+
 		q := newQuery(parsed)
 		var numResults int
 		for q.HasMorePages() {
-			rsp, err := q.Invoke(context.Background(), cli)
+			rsp, err := q.Invoke(ctx, cli)
 			if err != nil {
 				return err
 			}
