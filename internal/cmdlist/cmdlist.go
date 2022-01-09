@@ -28,6 +28,66 @@ var Command = &command.C{
 
 	Commands: []*command.C{
 		{
+			Name:  "lookup",
+			Usage: "id [fields...]",
+			Help:  "Look up information about the specified list id.",
+			Run: func(env *command.Env, args []string) error {
+				parsed := config.ParseArgs(args, "list")
+				if len(parsed.Keys) == 0 {
+					return command.FailWithUsage(env, args)
+				}
+
+				cli, err := env.Config.(*config.Config).NewClient()
+				if err != nil {
+					return fmt.Errorf("creating client: %w", err)
+				}
+
+				rsp, err := lists.Lookup(parsed.Keys[0], &lists.ListOpts{
+					Optional: parsed.Fields,
+				}).Invoke(context.Background(), cli)
+				if err != nil {
+					return err
+				} else if len(rsp.Lists) == 0 {
+					return fmt.Errorf("list id %q not found", parsed.Keys[0])
+				}
+				data, err := json.Marshal(rsp.Lists[0])
+				if err != nil {
+					return err
+				}
+				fmt.Println(string(data))
+				return nil
+			},
+		},
+		{
+			Name:  "owned-by",
+			Usage: "user-id [fields...]",
+			Help:  "Fetch information about the lists owned by user-id.",
+			Run: func(env *command.Env, args []string) error {
+				parsed := config.ParseArgs(args, "list")
+				if len(parsed.Keys) == 0 {
+					return command.FailWithUsage(env, args)
+				}
+
+				cli, err := env.Config.(*config.Config).NewClient()
+				if err != nil {
+					return fmt.Errorf("creating client: %w", err)
+				}
+
+				rsp, err := lists.OwnedBy(parsed.Keys[0], &lists.ListOpts{
+					Optional: parsed.Fields,
+				}).Invoke(context.Background(), cli)
+				if err != nil {
+					return err
+				}
+				data, err := json.Marshal(rsp.Lists)
+				if err != nil {
+					return err
+				}
+				fmt.Println(string(data))
+				return nil
+			},
+		},
+		{
 			Name:  "followers",
 			Usage: "username/id [user.fields...]",
 			Help:  "Fetch the followers of the specified user.",
