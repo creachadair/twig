@@ -147,7 +147,7 @@ var Command = &command.C{
 			},
 		},
 		{
-			Name:  "add",
+			Name:  "add-member",
 			Usage: "list-id user-id...",
 			Help:  "Add the given user ids to the specified list id.",
 			Run: func(env *command.Env, args []string) error {
@@ -172,7 +172,7 @@ var Command = &command.C{
 			},
 		},
 		{
-			Name:  "remove",
+			Name:  "remove-member",
 			Usage: "list-id user-id...",
 			Help:  "Remove the given user ids from the specified list id.",
 			Run: func(env *command.Env, args []string) error {
