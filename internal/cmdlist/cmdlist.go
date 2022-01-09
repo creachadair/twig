@@ -299,10 +299,16 @@ func runList(newQuery func(config.ParsedArgs) lists.Query) func(*command.Env, []
 			return fmt.Errorf("creating client: %w", err)
 		}
 
-		rsp, err := newQuery(parsed).Invoke(context.Background(), cli)
-		if err != nil {
-			return err
+		q := newQuery(parsed)
+		for q.HasMorePages() {
+			rsp, err := q.Invoke(context.Background(), cli)
+			if err != nil {
+				return err
+			}
+			if err := config.PrintJSON(rsp.Lists); err != nil {
+				return err
+			}
 		}
-		return config.PrintJSON(rsp.Lists)
+		return nil
 	}
 }
