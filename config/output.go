@@ -3,9 +3,14 @@
 package config
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"strings"
+
+	"github.com/creachadair/twitter"
+	"github.com/creachadair/twitter/users"
 )
 
 func printJSON(v interface{}) error {
@@ -30,4 +35,29 @@ func PrintJSON(v interface{}) error {
 		return nil
 	}
 	return printJSON(v)
+}
+
+// ResolveID checks a slice of user specifications and attempts to resolve any
+// that begin with "@" with their user ID.
+func ResolveID(ctx context.Context, cli *twitter.Client, specs []string) ([]string, error) {
+	var ids, names []string
+	for _, spec := range specs {
+		if strings.HasPrefix(spec, "@") {
+			names = append(names, strings.TrimPrefix(spec, "@"))
+		} else {
+			ids = append(ids, spec)
+		}
+	}
+	if len(names) != 0 {
+		rsp, err := users.LookupByName(names[0], &users.LookupOpts{
+			More: names[1:],
+		}).Invoke(ctx, cli)
+		if err != nil {
+			return nil, err
+		}
+		for _, u := range rsp.Users {
+			ids = append(ids, u.ID)
+		}
+	}
+	return ids, nil
 }
