@@ -20,7 +20,6 @@ var Command = &command.C{
 	Help: "Commands to interact with user lists.",
 
 	SetFlags: func(_ *command.Env, fs *flag.FlagSet) {
-		fs.BoolVar(&opts.byID, "id", false, "Resolve user by ID")
 		fs.IntVar(&opts.maxResults, "max", 0, "Maximum results to return (0 means all)")
 	},
 
@@ -228,7 +227,6 @@ var Command = &command.C{
 }
 
 var opts struct {
-	byID       bool
 	maxResults int
 	fields     types.UserFields
 	private    bool
