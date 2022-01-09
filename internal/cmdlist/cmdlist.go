@@ -159,15 +159,21 @@ var Command = &command.C{
 				if len(args) < 2 {
 					return command.FailWithUsage(env, args)
 				}
-				listID, users := args[0], args[1:]
 
+				ctx := context.Background()
 				cli, err := env.Config.(*config.Config).NewClient()
 				if err != nil {
 					return fmt.Errorf("creating client: %w", err)
 				}
 
+				listID := args[0]
+				users, err := config.ResolveID(ctx, cli, args[1:])
+				if err != nil {
+					return err
+				}
+
 				for _, userID := range users {
-					ok, err := lists.AddMember(listID, userID).Invoke(context.Background(), cli)
+					ok, err := lists.AddMember(listID, userID).Invoke(ctx, cli)
 					if err != nil {
 						return fmt.Errorf("add user %q: %w", userID, err)
 					}
@@ -184,15 +190,21 @@ var Command = &command.C{
 				if len(args) < 2 {
 					return command.FailWithUsage(env, args)
 				}
-				listID, users := args[0], args[1:]
 
+				ctx := context.Background()
 				cli, err := env.Config.(*config.Config).NewClient()
 				if err != nil {
 					return fmt.Errorf("creating client: %w", err)
 				}
 
+				listID := args[0]
+				users, err := config.ResolveID(ctx, cli, args[1:])
+				if err != nil {
+					return err
+				}
+
 				for _, userID := range users {
-					ok, err := lists.RemoveMember(listID, userID).Invoke(context.Background(), cli)
+					ok, err := lists.RemoveMember(listID, userID).Invoke(ctx, cli)
 					if err != nil {
 						return fmt.Errorf("add user %q: %w", userID, err)
 					}
