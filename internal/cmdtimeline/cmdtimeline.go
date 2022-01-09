@@ -58,7 +58,7 @@ func runWithID(newQuery func(id string) ostatus.TimelineQuery) func(*command.Env
 		cfg := env.Config.(*config.Config)
 		user := cfg.AuthUser
 
-		rest, err := config.ParseParams(args, &opts.Optional)
+		rest, err := config.ParseParams(args, "tweet", &opts.Optional)
 		if err != nil {
 			return err
 		} else if len(rest) > 1 {

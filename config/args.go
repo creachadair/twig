@@ -19,13 +19,15 @@ type OptionSetter interface {
 // Parameter names are prefixed with a colon, for example ":entities".
 // It returns the unconsumed arguments or reports a descriptive error for an
 // unknown parameter name.
-func ParseParams(args []string, opt OptionSetter) ([]string, error) {
+func ParseParams(args []string, kind string, opt OptionSetter) ([]string, error) {
 	var rest []string
 	for _, arg := range args {
-		trim := strings.TrimPrefix(arg, ":")
-		if trim == arg {
+		parts := strings.SplitN(arg, ":", 2)
+		if len(parts) == 1 {
 			rest = append(rest, arg)
-		} else if !opt.Set(trim, true) {
+		} else if parts[0] != "" && parts[0] != kind {
+			return nil, fmt.Errorf("wrong parameter type %q (want %q)", parts[0], kind)
+		} else if !opt.Set(parts[1], true) {
 			return nil, fmt.Errorf("unknown parameter: %q", arg)
 		}
 	}

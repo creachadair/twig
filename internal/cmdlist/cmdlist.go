@@ -249,7 +249,7 @@ func newListOpts() *olists.ListOpts {
 
 func runWithID(newQuery func(id string) olists.Query) func(*command.Env, []string) error {
 	return func(env *command.Env, args []string) error {
-		rest, err := config.ParseParams(args, &opts.fields)
+		rest, err := config.ParseParams(args, "user", &opts.fields)
 		if err != nil {
 			return err
 		} else if len(rest) != 1 || rest[0] == "" {

@@ -82,7 +82,7 @@ var cmdCreate = &command.C{
 
 	Run: func(env *command.Env, args []string) error {
 		var opts types.TweetFields
-		rest, err := config.ParseParams(args, &opts)
+		rest, err := config.ParseParams(args, "tweet", &opts)
 		if err != nil {
 			return err
 		}
