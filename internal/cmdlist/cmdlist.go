@@ -13,6 +13,7 @@ import (
 	"github.com/creachadair/twitter/lists"
 	"github.com/creachadair/twitter/olists"
 	"github.com/creachadair/twitter/types"
+	"github.com/creachadair/twitter/users"
 )
 
 var Command = &command.C{
@@ -21,8 +22,7 @@ var Command = &command.C{
 
 	SetFlags: func(_ *command.Env, fs *flag.FlagSet) {
 		fs.BoolVar(&opts.byID, "id", false, "Resolve user by ID")
-		fs.StringVar(&opts.pageToken, "page-token", "", "Page token")
-		fs.IntVar(&opts.pageSize, "page-size", 100, "Number of results per page")
+		fs.IntVar(&opts.maxResults, "max", 0, "Maximum results to return (0 means all)")
 	},
 
 	Commands: []*command.C{
@@ -42,9 +42,7 @@ var Command = &command.C{
 			Help:  "Fetch information about the lists owned by user-id.",
 			Run: runList(func(parsed config.ParsedArgs) lists.Query {
 				return lists.OwnedBy(parsed.Keys[0], &lists.ListOpts{
-					PageToken:  opts.pageToken,
-					MaxResults: opts.pageSize,
-					Optional:   parsed.Fields,
+					Optional: parsed.Fields,
 				})
 			}),
 		},
@@ -202,8 +200,10 @@ var Command = &command.C{
 			Name:  "members",
 			Usage: "list-id [user.fields...]",
 			Help:  "Fetch the members of the specified list.",
-			Run: runWithID(func(id string) olists.Query {
-				return olists.Members(id, newListOpts())
+			Run: runUsers(func(parsed config.ParsedArgs) users.Query {
+				return lists.Members(parsed.Keys[0], &lists.ListOpts{
+					Optional: parsed.Fields,
+				})
 			}),
 		},
 		{
@@ -218,12 +218,10 @@ var Command = &command.C{
 }
 
 var opts struct {
-	byID      bool
-	pageToken string
-	pageSize  int
-	fields    types.UserFields
-
-	private bool
+	byID       bool
+	maxResults int
+	fields     types.UserFields
+	private    bool
 }
 
 func isSet(fs flag.FlagSet, name string) (s string, ok bool) {
@@ -238,18 +236,16 @@ func isSet(fs flag.FlagSet, name string) (s string, ok bool) {
 
 func newFollowOpts() *olists.FollowOpts {
 	return &olists.FollowOpts{
-		ByID:      opts.byID,
-		PageToken: opts.pageToken,
-		PerPage:   opts.pageSize,
-		Optional:  opts.fields,
+		ByID:     opts.byID,
+		PerPage:  opts.maxResults,
+		Optional: opts.fields,
 	}
 }
 
 func newListOpts() *olists.ListOpts {
 	return &olists.ListOpts{
-		PageToken: opts.pageToken,
-		PerPage:   opts.pageSize,
-		Optional:  opts.fields,
+		PerPage:  opts.maxResults,
+		Optional: opts.fields,
 	}
 }
 
@@ -300,13 +296,58 @@ func runList(newQuery func(config.ParsedArgs) lists.Query) func(*command.Env, []
 		}
 
 		q := newQuery(parsed)
+		var numResults int
 		for q.HasMorePages() {
 			rsp, err := q.Invoke(context.Background(), cli)
 			if err != nil {
 				return err
 			}
-			if err := config.PrintJSON(rsp.Lists); err != nil {
+			lst := rsp.Lists
+			numResults += len(lst)
+			if opts.maxResults > 0 && numResults > opts.maxResults {
+				lst = lst[:len(lst)-(numResults-opts.maxResults)]
+			}
+			if err := config.PrintJSON(lst); err != nil {
 				return err
+			}
+			if opts.maxResults > 0 && numResults >= opts.maxResults {
+				return nil // nothing more to do
+			}
+		}
+		return nil
+	}
+}
+
+func runUsers(newQuery func(config.ParsedArgs) users.Query) func(*command.Env, []string) error {
+	return func(env *command.Env, args []string) error {
+		parsed := config.ParseArgs(args, "user")
+		if len(parsed.Keys) == 0 {
+			fmt.Fprintln(env, "Error: missing required id argument")
+			return command.FailWithUsage(env, args)
+		}
+
+		cli, err := env.Config.(*config.Config).NewClient()
+		if err != nil {
+			return fmt.Errorf("creating client: %w", err)
+		}
+
+		q := newQuery(parsed)
+		var numResults int
+		for q.HasMorePages() {
+			rsp, err := q.Invoke(context.Background(), cli)
+			if err != nil {
+				return err
+			}
+			users := rsp.Users
+			numResults += len(users)
+			if opts.maxResults > 0 && numResults > opts.maxResults {
+				users = users[:len(users)-(numResults-opts.maxResults)]
+			}
+			if err := config.PrintJSON(users); err != nil {
+				return err
+			}
+			if opts.maxResults > 0 && numResults >= opts.maxResults {
+				return nil // nothing more to do
 			}
 		}
 		return nil
