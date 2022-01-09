@@ -37,7 +37,7 @@ func ParseParams(args []string, kind string, opt OptionSetter) ([]string, error)
 // ParseArgs decodes an argument list consisting of IDs or names mixed with
 // field specifiers and expansions. A field spec has the form "name:value",
 // where name is the object type (for example "tweet", "user"), and value is an
-// arbitrary string. An expansion has the form "@name".
+// arbitrary string. An expansion has the form "+name".
 //
 // If dtype != "", a spec of the form ":value" is treated as "dtype:value".
 func ParseArgs(args []string, dtype string) ParsedArgs {
@@ -47,7 +47,7 @@ func ParseArgs(args []string, dtype string) ParsedArgs {
 
 	for _, arg := range args {
 		// @foo is an expansion
-		if exp := strings.TrimPrefix(arg, "@"); exp != arg {
+		if exp := strings.TrimPrefix(arg, "+"); exp != arg {
 			if sc, ok := expShortcut[exp]; ok {
 				exp = sc
 			}

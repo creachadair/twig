@@ -12,7 +12,7 @@ List of expansions available for query results.
 
 By default, result objects refer to other objects by reference (ID).
 The server will expand certain references on request.
-Use the syntax "@name" on the command-line, e.g. "@author_id".
+Use the syntax "+name" on the command-line, e.g. "+author_id".
 
 author_id
    : expand a user object for the author of a tweet
