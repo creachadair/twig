@@ -23,7 +23,7 @@ var Command = &command.C{
 	SetFlags: func(_ *command.Env, fs *flag.FlagSet) {
 		fs.BoolVar(&opts.byID, "id", false, "Resolve user by ID")
 		fs.StringVar(&opts.pageToken, "page-token", "", "Page token")
-		fs.IntVar(&opts.pageSize, "page-size", 200, "Number of results per page")
+		fs.IntVar(&opts.pageSize, "page-size", 100, "Number of results per page")
 	},
 
 	Commands: []*command.C{
@@ -74,7 +74,9 @@ var Command = &command.C{
 				}
 
 				rsp, err := lists.OwnedBy(parsed.Keys[0], &lists.ListOpts{
-					Optional: parsed.Fields,
+					PageToken:  opts.pageToken,
+					MaxResults: opts.pageSize,
+					Optional:   parsed.Fields,
 				}).Invoke(context.Background(), cli)
 				if err != nil {
 					return err
