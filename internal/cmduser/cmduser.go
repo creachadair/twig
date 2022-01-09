@@ -5,6 +5,7 @@ package cmduser
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/creachadair/command"
 	"github.com/creachadair/twig/config"
@@ -17,8 +18,8 @@ var Command = &command.C{
 	Help: `
 Look up the specified user IDs or usernames.
 
-Each argument is either a username, user ID, or field specifier.
-A field specifier has the form type:field, e.g., "user:entities".
+Each argument is either a username (@name0, user ID (12345), or an optional
+field specifier.  A field specifier has the form type:field, e.g., user:entities
 As a special case, :field is shorthand for "user:field".
 `,
 
@@ -37,23 +38,19 @@ As a special case, :field is shorthand for "user:field".
 			More:     parsed.Keys[1:],
 			Optional: parsed.Fields,
 		}
+		user := parsed.Keys[0]
 
 		var q users.Query
-		if byID {
-			q = users.Lookup(parsed.Keys[0], opts)
+		if strings.HasPrefix(user, "@") {
+			q = users.LookupByName(strings.TrimPrefix(user, "@"), opts)
 		} else {
-			q = users.LookupByName(parsed.Keys[0], opts)
+			q = users.Lookup(user, opts)
 		}
+
 		rsp, err := q.Invoke(context.Background(), cli)
 		if err != nil {
 			return err
 		}
 		return config.PrintJSON(rsp.Users)
 	},
-}
-
-var byID bool
-
-func init() {
-	Command.Flags.BoolVar(&byID, "id", false, "Resolve users by ID")
 }
