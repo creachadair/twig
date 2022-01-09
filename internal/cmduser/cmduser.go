@@ -18,7 +18,7 @@ var Command = &command.C{
 	Help: `
 Look up the specified user IDs or usernames.
 
-Each argument is either a username (@name0, user ID (12345), or an optional
+Each argument is either a username (@name), user ID (12345), or an optional
 field specifier.  A field specifier has the form type:field, e.g., user:entities
 As a special case, :field is shorthand for "user:field".
 `,
