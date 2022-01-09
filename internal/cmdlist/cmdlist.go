@@ -193,6 +193,56 @@ var Command = &command.C{
 			},
 		},
 		{
+			Name:  "add",
+			Usage: "list-id user-id...",
+			Help:  "Add the given user ids to the specified list id.",
+			Run: func(env *command.Env, args []string) error {
+				if len(args) < 2 {
+					return command.FailWithUsage(env, args)
+				}
+				listID, users := args[0], args[1:]
+
+				cli, err := env.Config.(*config.Config).NewClient()
+				if err != nil {
+					return fmt.Errorf("creating client: %w", err)
+				}
+
+				for _, userID := range users {
+					ok, err := lists.AddMember(listID, userID).Invoke(context.Background(), cli)
+					if err != nil {
+						return fmt.Errorf("add user %q: %w", userID, err)
+					}
+					fmt.Printf("%s: %v\n", userID, ok)
+				}
+				return nil
+			},
+		},
+		{
+			Name:  "remove",
+			Usage: "list-id user-id...",
+			Help:  "Remove the given user ids from the specified list id.",
+			Run: func(env *command.Env, args []string) error {
+				if len(args) < 2 {
+					return command.FailWithUsage(env, args)
+				}
+				listID, users := args[0], args[1:]
+
+				cli, err := env.Config.(*config.Config).NewClient()
+				if err != nil {
+					return fmt.Errorf("creating client: %w", err)
+				}
+
+				for _, userID := range users {
+					ok, err := lists.DeleteMember(listID, userID).Invoke(context.Background(), cli)
+					if err != nil {
+						return fmt.Errorf("add user %q: %w", userID, err)
+					}
+					fmt.Printf("%s: %v\n", userID, !ok)
+				}
+				return nil
+			},
+		},
+		{
 			Name:  "members",
 			Usage: "list-id [user.fields...]",
 			Help:  "Fetch the members of the specified list.",
