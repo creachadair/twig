@@ -16,7 +16,10 @@ import (
 var Command = &command.C{
 	Name:  "stream",
 	Usage: "field-spec...",
-	Help:  "Stream matches to the current query rules.",
+	Help: `Stream matches to the current query rules.
+
+See the "rules" command for creating, viewing, and deleting the
+streaming search rules.`,
 	SetFlags: func(_ *command.Env, fs *flag.FlagSet) {
 		fs.IntVar(&opts.maxResults, "max", 0, "Maximum results to fetch (0 means all)")
 	},
