@@ -18,7 +18,7 @@ import (
 
 var Command = &command.C{
 	Name: "list",
-	Help: "Commands to list followers and following.",
+	Help: "Commands to interact with user lists.",
 
 	SetFlags: func(_ *command.Env, fs *flag.FlagSet) {
 		fs.BoolVar(&opts.byID, "id", false, "Resolve user by ID")
