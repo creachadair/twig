@@ -4,7 +4,6 @@ package cmdlookup
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"github.com/creachadair/command"
@@ -41,11 +40,6 @@ As a special case, :field is shorthand for "tweet:field".
 		if err != nil {
 			return err
 		}
-		data, err := json.Marshal(rsp.Reply)
-		if err != nil {
-			return err
-		}
-		fmt.Println(string(data))
-		return nil
+		return config.PrintJSON(rsp.Tweets)
 	},
 }

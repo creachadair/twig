@@ -4,7 +4,6 @@ package cmdrules
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -43,14 +42,7 @@ rules are listed.
 		if err != nil {
 			return err
 		}
-		data, err := json.Marshal(struct {
-			R []rules.Rule `json:"rules"`
-		}{R: rsp.Rules})
-		if err != nil {
-			return err
-		}
-		fmt.Println(string(data))
-		return nil
+		return config.PrintJSON(rsp.Rules)
 	},
 }
 
@@ -73,14 +65,7 @@ var cmdDelete = &command.C{
 		if err != nil {
 			return err
 		}
-		data, err := json.Marshal(struct {
-			M *rules.Meta `json:"meta"`
-		}{M: rsp.Meta})
-		if err != nil {
-			return err
-		}
-		fmt.Println(string(data))
-		return nil
+		return config.PrintJSON(rsp.Meta)
 	},
 }
 
@@ -117,14 +102,6 @@ If a tag= prefix is given, the rule is labelled with that tag.
 		if err != nil {
 			return err
 		}
-		data, err := json.Marshal(struct {
-			R []rules.Rule `json:"rules,omitempty"`
-			M *rules.Meta  `json:"meta"`
-		}{R: rsp.Rules, M: rsp.Meta})
-		if err != nil {
-			return err
-		}
-		fmt.Println(string(data))
-		return nil
+		return config.PrintJSON(rsp.Rules)
 	},
 }

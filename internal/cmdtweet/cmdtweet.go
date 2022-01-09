@@ -4,7 +4,6 @@ package cmdtweet
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -104,14 +103,7 @@ var cmdCreate = &command.C{
 		if err != nil {
 			return err
 		}
-		data, err := json.Marshal(struct {
-			D []*types.Tweet `json:"data"`
-		}{D: rsp.Tweets})
-		if err != nil {
-			return err
-		}
-		fmt.Println(string(data))
-		return nil
+		return config.PrintJSON(rsp.Tweets)
 	},
 }
 
@@ -130,13 +122,6 @@ func runWithID(newQuery func(id string) ostatus.Query) func(*command.Env, []stri
 		if err != nil {
 			return err
 		}
-		data, err := json.Marshal(struct {
-			D []*types.Tweet `json:"data"`
-		}{D: rsp.Tweets})
-		if err != nil {
-			return err
-		}
-		fmt.Println(string(data))
-		return nil
+		return config.PrintJSON(rsp.Tweets)
 	}
 }

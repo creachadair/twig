@@ -4,7 +4,6 @@ package cmdsearch
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"time"
@@ -76,16 +75,16 @@ page token to resume searching from.
 			if err != nil {
 				return err
 			}
-			for _, tw := range rsp.Tweets {
-				numResults++
-				data, err := json.Marshal(tw)
-				if err != nil {
-					return err
-				}
-				fmt.Println(string(data))
-				if opts.maxResults > 0 && numResults >= opts.maxResults {
-					return nil // our work is complete
-				}
+			tw := rsp.Tweets
+			numResults += len(tw)
+			if opts.maxResults > 0 && numResults > opts.maxResults {
+				tw = rsp.Tweets[:len(tw)-(numResults-opts.maxResults)]
+			}
+			if err := config.PrintJSON(tw); err != nil {
+				return err
+			}
+			if opts.maxResults > 0 && numResults >= opts.maxResults {
+				return nil // our work here is finished
 			}
 		}
 		return nil

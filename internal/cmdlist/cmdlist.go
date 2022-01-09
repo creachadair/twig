@@ -4,7 +4,6 @@ package cmdlist
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"strings"
@@ -50,12 +49,7 @@ var Command = &command.C{
 				} else if len(rsp.Lists) == 0 {
 					return fmt.Errorf("list id %q not found", parsed.Keys[0])
 				}
-				data, err := json.Marshal(rsp.Lists[0])
-				if err != nil {
-					return err
-				}
-				fmt.Println(string(data))
-				return nil
+				return config.PrintJSON(rsp.Lists[0])
 			},
 		},
 		{
@@ -81,12 +75,7 @@ var Command = &command.C{
 				if err != nil {
 					return err
 				}
-				data, err := json.Marshal(rsp.Lists)
-				if err != nil {
-					return err
-				}
-				fmt.Println(string(data))
-				return nil
+				return config.PrintJSON(rsp.Lists)
 			},
 		},
 		{
@@ -128,12 +117,7 @@ var Command = &command.C{
 				if err != nil {
 					return err
 				}
-				data, err := json.Marshal(rsp.Lists[0])
-				if err != nil {
-					return err
-				}
-				fmt.Println(string(data))
-				return nil
+				return config.PrintJSON(rsp.Lists[0])
 			},
 		},
 		{
@@ -328,11 +312,6 @@ func runWithID(newQuery func(id string) olists.Query) func(*command.Env, []strin
 		if rsp.NextToken != "" {
 			out.M = &meta{T: rsp.NextToken}
 		}
-		data, err := json.Marshal(out)
-		if err != nil {
-			return err
-		}
-		fmt.Println(string(data))
-		return nil
+		return config.PrintJSON(out)
 	}
 }

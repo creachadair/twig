@@ -4,7 +4,6 @@ package cmdstream
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
 
@@ -34,14 +33,7 @@ streaming search rules.`,
 			return fmt.Errorf("creating client: %w", err)
 		}
 		return tweets.SearchStream(func(rsp *tweets.Reply) error {
-			for _, tw := range rsp.Tweets {
-				data, err := json.Marshal(tw)
-				if err != nil {
-					return err
-				}
-				fmt.Println(string(data))
-			}
-			return nil
+			return config.PrintJSON(rsp.Tweets)
 		}, &tweets.StreamOpts{
 			MaxResults: opts.maxResults,
 			Optional:   parsed.Fields,

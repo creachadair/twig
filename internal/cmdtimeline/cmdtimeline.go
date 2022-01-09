@@ -4,13 +4,11 @@ package cmdtimeline
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"github.com/creachadair/command"
 	"github.com/creachadair/twig/config"
 	"github.com/creachadair/twitter/ostatus"
-	"github.com/creachadair/twitter/types"
 )
 
 var Command = &command.C{
@@ -79,13 +77,6 @@ func runWithID(newQuery func(id string) ostatus.TimelineQuery) func(*command.Env
 		if err != nil {
 			return err
 		}
-		data, err := json.Marshal(struct {
-			D []*types.Tweet `json:"data"`
-		}{D: rsp.Tweets})
-		if err != nil {
-			return err
-		}
-		fmt.Println(string(data))
-		return nil
+		return config.PrintJSON(rsp.Tweets)
 	}
 }
