@@ -29,28 +29,42 @@ As a special case, :field is shorthand for "user:field".
 			fmt.Fprintln(env, "Error: no usernames or IDs were specified")
 			return command.FailWithUsage(env, args)
 		}
+		var ids, names []string
+		for _, key := range parsed.Keys {
+			if strings.HasPrefix(key, "@") {
+				names = append(names, strings.TrimPrefix(key, "@"))
+			} else {
+				ids = append(ids, key)
+			}
+		}
 
+		ctx := context.Background()
 		cli, err := env.Config.(*config.Config).NewClient()
 		if err != nil {
 			return fmt.Errorf("creating client: %w", err)
 		}
-		opts := &users.LookupOpts{
-			More:     parsed.Keys[1:],
-			Optional: parsed.Fields,
+		if len(ids) != 0 {
+			rsp, err := users.Lookup(ids[0], &users.LookupOpts{
+				More:     ids[1:],
+				Optional: parsed.Fields,
+			}).Invoke(ctx, cli)
+			if err != nil {
+				return err
+			} else if err := config.PrintJSON(rsp.Users); err != nil {
+				return err
+			}
 		}
-		user := parsed.Keys[0]
-
-		var q users.Query
-		if strings.HasPrefix(user, "@") {
-			q = users.LookupByName(strings.TrimPrefix(user, "@"), opts)
-		} else {
-			q = users.Lookup(user, opts)
+		if len(names) != 0 {
+			rsp, err := users.LookupByName(names[0], &users.LookupOpts{
+				More:     names[1:],
+				Optional: parsed.Fields,
+			}).Invoke(ctx, cli)
+			if err != nil {
+				return err
+			} else if err := config.PrintJSON(rsp.Users); err != nil {
+				return err
+			}
 		}
-
-		rsp, err := q.Invoke(context.Background(), cli)
-		if err != nil {
-			return err
-		}
-		return config.PrintJSON(rsp.Users)
+		return nil
 	},
 }
