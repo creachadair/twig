@@ -207,11 +207,13 @@ var Command = &command.C{
 			}),
 		},
 		{
-			Name:  "subscribers",
+			Name:  "followers",
 			Usage: "list-id [user.fields...]",
-			Help:  "Fetch the subscribers to the specified list.",
-			Run: runWithID(func(id string) olists.Query {
-				return olists.Subscribers(id, newListOpts())
+			Help:  "Fetch the followers of the specified list.",
+			Run: runUsers(func(parsed config.ParsedArgs) users.Query {
+				return lists.Followers(parsed.Keys[0], &lists.ListOpts{
+					Optional: parsed.Fields,
+				})
 			}),
 		},
 	},
@@ -237,13 +239,6 @@ func isSet(fs flag.FlagSet, name string) (s string, ok bool) {
 func newFollowOpts() *olists.FollowOpts {
 	return &olists.FollowOpts{
 		ByID:     opts.byID,
-		PerPage:  opts.maxResults,
-		Optional: opts.fields,
-	}
-}
-
-func newListOpts() *olists.ListOpts {
-	return &olists.ListOpts{
 		PerPage:  opts.maxResults,
 		Optional: opts.fields,
 	}
