@@ -187,7 +187,7 @@ var Command = &command.C{
 				}
 
 				for _, userID := range users {
-					ok, err := lists.DeleteMember(listID, userID).Invoke(context.Background(), cli)
+					ok, err := lists.RemoveMember(listID, userID).Invoke(context.Background(), cli)
 					if err != nil {
 						return fmt.Errorf("add user %q: %w", userID, err)
 					}
