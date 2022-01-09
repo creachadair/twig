@@ -5,6 +5,7 @@ package cmdsearch
 import (
 	"context"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"time"
 
@@ -16,7 +17,7 @@ import (
 
 var Command = &command.C{
 	Name:  "search",
-	Usage: "[-page token] -query q [field-spec...]",
+	Usage: "[-max n] -query query [field-spec...]",
 	Help: `
 Search for recent tweets matching the specified query.
 
@@ -26,9 +27,17 @@ As a special case, :field is shorthand for "tweet:field".
 If the results span multiple pages, use -page to set the
 page token to resume searching from.
 `,
+	SetFlags: func(_ *command.Env, fs *flag.FlagSet) {
+		fs.StringVar(&opts.query, "query", "", "Search query (required)")
+		fs.IntVar(&opts.maxResults, "max", 0, "Maximum results to request (0 means all)")
+		fs.StringVar(&opts.sinceID, "after", "", "Return tweets (strictly) after this ID")
+		fs.StringVar(&opts.untilID, "before", "", "Return tweets (strictly) before this ID")
+		fs.Var(timestamp{&opts.since}, "since", "Return tweets no older than this")
+		fs.Var(timestamp{&opts.until}, "until", "Return tweets no newer than this")
+	},
 
 	Run: func(env *command.Env, args []string) error {
-		if searchQuery == "" {
+		if opts.query == "" {
 			fmt.Fprintln(env, "Error: a search -query must be set")
 			return command.FailWithUsage(env, args)
 		}
@@ -42,34 +51,54 @@ page token to resume searching from.
 		if err != nil {
 			return fmt.Errorf("creating client: %w", err)
 		}
-		searchOpts.Optional = parsed.Fields
-		rsp, err := tweets.SearchRecent(searchQuery, &searchOpts).Invoke(context.Background(), cli)
-		if err != nil {
-			return err
+
+		// Choose a page size based on the requested max results.  The service
+		// will not accept arbitrary sizes, so we'll paginate based on what the
+		// user requested.
+		max := opts.maxResults
+		if max <= 0 || max > 100 {
+			max = 100
+		} else if max < 10 {
+			max = 10
 		}
-		data, err := json.Marshal(rsp.Reply)
-		if err != nil {
-			return err
+
+		q := tweets.SearchRecent(opts.query, &tweets.SearchOpts{
+			StartTime:  opts.since,
+			EndTime:    opts.until,
+			MaxResults: max,
+			SinceID:    opts.sinceID,
+			UntilID:    opts.untilID,
+			Optional:   parsed.Fields,
+		})
+		var numResults int
+		for q.HasMorePages() {
+			rsp, err := q.Invoke(context.Background(), cli)
+			if err != nil {
+				return err
+			}
+			for _, tw := range rsp.Tweets {
+				numResults++
+				data, err := json.Marshal(tw)
+				if err != nil {
+					return err
+				}
+				fmt.Println(string(data))
+				if opts.maxResults > 0 && numResults >= opts.maxResults {
+					return nil // our work is complete
+				}
+			}
 		}
-		fmt.Println(string(data))
 		return nil
 	},
 }
 
-var (
-	searchOpts  tweets.SearchOpts
-	searchQuery string
-)
-
-func init() {
-	fs := &Command.Flags
-	fs.IntVar(&searchOpts.MaxResults, "max-results", 0, "Maximum results to request (10..100)")
-	fs.StringVar(&searchOpts.PageToken, "page", "", "Page token to resume search")
-	fs.StringVar(&searchOpts.SinceID, "after", "", "Return tweets (strictly) after this ID")
-	fs.StringVar(&searchOpts.UntilID, "before", "", "Return tweets (strictly) before this ID")
-	fs.StringVar(&searchQuery, "query", "", "Search query (required)")
-	fs.Var(timestamp{&searchOpts.StartTime}, "since", "Return tweets no older than this")
-	fs.Var(timestamp{&searchOpts.EndTime}, "until", "Return tweets no newer than this")
+var opts struct {
+	maxResults int
+	sinceID    string
+	untilID    string
+	since      time.Time
+	until      time.Time
+	query      string
 }
 
 type timestamp struct {
