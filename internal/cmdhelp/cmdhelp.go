@@ -79,6 +79,21 @@ The following field tags are available:
 `,
 	},
 	{
+		Name: "list.fields",
+		Help: `
+List of optional List field parameters.
+
+By default, list objects are returned with a minimal set of default
+fields (ID name). Additional fields can be requested in the query.
+Use the syntax "list:name", e.g., "list:created_at".
+
+The following field tags are available:
+
+  created_at   follower_count  owner_id
+  description  member_count    private
+`,
+	},
+	{
 		Name: "poll.fields",
 		Help: `
 List of optional Poll field parameters.
