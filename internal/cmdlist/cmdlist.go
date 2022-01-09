@@ -11,7 +11,6 @@ import (
 	"github.com/creachadair/command"
 	"github.com/creachadair/twig/config"
 	"github.com/creachadair/twitter/lists"
-	"github.com/creachadair/twitter/olists"
 	"github.com/creachadair/twitter/types"
 	"github.com/creachadair/twitter/users"
 )
@@ -42,24 +41,31 @@ var Command = &command.C{
 			Help:  "Fetch information about the lists owned by user-id.",
 			Run: runList(func(parsed config.ParsedArgs) lists.Query {
 				return lists.OwnedBy(parsed.Keys[0], &lists.ListOpts{
-					Optional: parsed.Fields,
+					MaxResults: maxQueryResults(),
+					Optional:   parsed.Fields,
 				})
 			}),
 		},
 		{
-			Name:  "user-followers",
+			Name:  "followers-of",
 			Usage: "username/id [user.fields...]",
 			Help:  "Fetch the followers of the specified user.",
-			Run: runWithID(func(id string) olists.Query {
-				return olists.Followers(id, newFollowOpts())
+			Run: runUsers(func(parsed config.ParsedArgs) users.Query {
+				return users.Followers(parsed.Keys[0], &users.ListOpts{
+					MaxResults: maxQueryResults(),
+					Optional:   parsed.Fields,
+				})
 			}),
 		},
 		{
-			Name:  "user-following",
+			Name:  "followed-by",
 			Usage: "username/id [user.fields...]",
-			Help:  "Fetch the users following the specified user.",
-			Run: runWithID(func(id string) olists.Query {
-				return olists.Following(id, newFollowOpts())
+			Help:  "Fetch the users followed by the specified user.",
+			Run: runUsers(func(parsed config.ParsedArgs) users.Query {
+				return users.Following(parsed.Keys[0], &users.ListOpts{
+					MaxResults: maxQueryResults(),
+					Optional:   parsed.Fields,
+				})
 			}),
 		},
 		{
@@ -202,7 +208,8 @@ var Command = &command.C{
 			Help:  "Fetch the members of the specified list.",
 			Run: runUsers(func(parsed config.ParsedArgs) users.Query {
 				return lists.Members(parsed.Keys[0], &lists.ListOpts{
-					Optional: parsed.Fields,
+					MaxResults: maxQueryResults(),
+					Optional:   parsed.Fields,
 				})
 			}),
 		},
@@ -212,7 +219,8 @@ var Command = &command.C{
 			Help:  "Fetch the followers of the specified list.",
 			Run: runUsers(func(parsed config.ParsedArgs) users.Query {
 				return lists.Followers(parsed.Keys[0], &lists.ListOpts{
-					Optional: parsed.Fields,
+					MaxResults: maxQueryResults(),
+					Optional:   parsed.Fields,
 				})
 			}),
 		},
@@ -226,6 +234,15 @@ var opts struct {
 	private    bool
 }
 
+func maxQueryResults() int {
+	if opts.maxResults <= 0 || opts.maxResults > 100 {
+		return 100
+	} else if opts.maxResults < 10 {
+		return 10
+	}
+	return opts.maxResults
+}
+
 func isSet(fs flag.FlagSet, name string) (s string, ok bool) {
 	fs.Visit(func(f *flag.Flag) {
 		if !ok && f.Name == name {
@@ -234,47 +251,6 @@ func isSet(fs flag.FlagSet, name string) (s string, ok bool) {
 		}
 	})
 	return
-}
-
-func newFollowOpts() *olists.FollowOpts {
-	return &olists.FollowOpts{
-		ByID:     opts.byID,
-		PerPage:  opts.maxResults,
-		Optional: opts.fields,
-	}
-}
-
-func runWithID(newQuery func(id string) olists.Query) func(*command.Env, []string) error {
-	return func(env *command.Env, args []string) error {
-		rest, err := config.ParseParams(args, "user", &opts.fields)
-		if err != nil {
-			return err
-		} else if len(rest) != 1 || rest[0] == "" {
-			return command.FailWithUsage(env, rest)
-		}
-
-		cli, err := env.Config.(*config.Config).NewClient()
-		if err != nil {
-			return fmt.Errorf("creating client: %w", err)
-		}
-
-		rsp, err := newQuery(rest[0]).Invoke(context.Background(), cli)
-		if err != nil {
-			return err
-		}
-
-		type meta struct {
-			T string `json:"next_token"`
-		}
-		out := struct {
-			D []*types.User `json:"data"`
-			M *meta         `json:"meta,omitempty"`
-		}{D: rsp.Users}
-		if rsp.NextToken != "" {
-			out.M = &meta{T: rsp.NextToken}
-		}
-		return config.PrintJSON(out)
-	}
 }
 
 func runList(newQuery func(config.ParsedArgs) lists.Query) func(*command.Env, []string) error {
