@@ -46,7 +46,7 @@ var opts ostatus.TimelineOpts
 
 func init() {
 	Command.Flags.BoolVar(&opts.ByID, "id", false, "Resolve user by ID")
-	Command.Flags.IntVar(&opts.MaxResults, "max-results", 0, "Maximum results to fetch")
+	Command.Flags.IntVar(&opts.MaxResults, "max", 0, "Maximum results to fetch")
 	Command.Flags.BoolVar(&opts.IncludeRetweets, "include-retweets", false, "Include retweets")
 	Command.Flags.BoolVar(&opts.ExcludeReplies, "exclude-replies", false, "Exclude replies")
 }
