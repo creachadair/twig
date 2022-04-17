@@ -50,7 +50,7 @@ var Command = &command.C{
 			Usage: "username/id [user.fields...]",
 			Help:  "Fetch the followers of the specified user.",
 			Run: runUsers(func(parsed config.ParsedArgs) users.Query {
-				return users.Followers(parsed.Keys[0], &users.ListOpts{
+				return users.FollowersOf(parsed.Keys[0], &users.ListOpts{
 					MaxResults: maxQueryResults(),
 					Optional:   parsed.Fields,
 				})
@@ -61,7 +61,7 @@ var Command = &command.C{
 			Usage: "username/id [user.fields...]",
 			Help:  "Fetch the users followed by the specified user.",
 			Run: runUsers(func(parsed config.ParsedArgs) users.Query {
-				return users.Following(parsed.Keys[0], &users.ListOpts{
+				return users.FollowedBy(parsed.Keys[0], &users.ListOpts{
 					MaxResults: maxQueryResults(),
 					Optional:   parsed.Fields,
 				})
