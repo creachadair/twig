@@ -31,32 +31,32 @@ var Command = &command.C{
 		},
 		{
 			Name:  "like",
-			Usage: "user-id id",
-			Help:  "Mark tweet id as liked by user-id.",
+			Usage: " id",
+			Help:  "Mark tweet id as liked by the authorized user.",
 			Run: runWithID(func(userID, tweetID string) edit.Query {
 				return edit.Like(userID, tweetID)
 			}),
 		},
 		{
 			Name:  "unlike",
-			Usage: "user-id id",
-			Help:  "Unmark tweet id as liked by user-id.",
+			Usage: "id",
+			Help:  "Unmark tweet id as liked by the authorized user.",
 			Run: runWithID(func(userID, tweetID string) edit.Query {
 				return edit.Unlike(userID, tweetID)
 			}),
 		},
 		{
 			Name:  "retweet",
-			Usage: "user-id id",
-			Help:  "Retweet tweet id from user.id.",
+			Usage: "id",
+			Help:  "Retweet tweet id from the authorized users.",
 			Run: runWithID(func(userID, tweetID string) edit.Query {
 				return edit.Retweet(userID, tweetID)
 			}),
 		},
 		{
 			Name:  "unretweet",
-			Usage: "user-id id",
-			Help:  "Un-retweet tweet id from user-id.",
+			Usage: "id",
+			Help:  "Un-retweet tweet id from the authorized user.",
 			Run: runWithID(func(userID, tweetID string) edit.Query {
 				return edit.Unretweet(userID, tweetID)
 			}),
