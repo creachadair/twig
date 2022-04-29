@@ -1,6 +1,6 @@
 module github.com/creachadair/twig
 
-go 1.17
+go 1.18
 
 require (
 	github.com/creachadair/atomicfile v0.2.5
