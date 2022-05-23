@@ -7,5 +7,5 @@ require (
 	github.com/creachadair/command v0.0.0-20220426235536-a748effdf6a1
 	github.com/creachadair/jhttp v0.0.0-20220426155725-42d8ba9f2669
 	github.com/creachadair/twitter v0.0.0-20220518141024-5a40bfbe2cfd
-	gopkg.in/yaml.v3 v3.0.0-20220512140231-539c8e751b99
+	gopkg.in/yaml.v3 v3.0.0
 )
