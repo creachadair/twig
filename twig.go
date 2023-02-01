@@ -4,6 +4,7 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -32,6 +33,12 @@ var (
 		Name:  filepath.Base(os.Args[0]),
 		Usage: `<command> [arguments]`,
 		Help:  `A command-line client for the Twitter API.`,
+
+		SetFlags: func(env *command.Env, fs *flag.FlagSet) {
+			fs.StringVar(&configFile, "config", configFile, "Configuration file path")
+			fs.IntVar(&logLevel, "log-level", 0, "Verbose client logging level (log tag mask)")
+			fs.StringVar(&authUser, "auth-user", authUser, "Authenticate with user context")
+		},
 
 		Init: func(env *command.Env) error {
 			path := os.ExpandEnv(configFile)
@@ -63,12 +70,6 @@ var (
 		},
 	}
 )
-
-func init() {
-	root.Flags.StringVar(&configFile, "config", configFile, "Configuration file path")
-	root.Flags.IntVar(&logLevel, "log-level", 0, "Verbose client logging level (log tag mask)")
-	root.Flags.StringVar(&authUser, "auth-user", authUser, "Authenticate with user context")
-}
 
 func main() {
 	if err := command.Run(root.NewEnv(nil), os.Args[1:]); err != nil {
