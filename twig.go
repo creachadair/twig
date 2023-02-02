@@ -11,7 +11,6 @@ import (
 	"path/filepath"
 
 	"github.com/creachadair/command"
-	"github.com/creachadair/jhttp"
 	"github.com/creachadair/twig/config"
 	"github.com/creachadair/twig/internal/cmdhelp"
 	"github.com/creachadair/twig/internal/cmdlist"
@@ -22,6 +21,7 @@ import (
 	"github.com/creachadair/twig/internal/cmdtimeline"
 	"github.com/creachadair/twig/internal/cmdtweet"
 	"github.com/creachadair/twig/internal/cmduser"
+	"github.com/creachadair/twitter/jape"
 )
 
 var (
@@ -47,10 +47,10 @@ var (
 				return err
 			}
 			if logLevel > 0 {
-				cfg.Log = func(tag jhttp.LogTag, msg string) {
+				cfg.Log = func(tag jape.LogTag, msg string) {
 					log.Printf("DEBUG :: %s | %s", tag, msg)
 				}
-				cfg.LogMask = jhttp.LogTag(logLevel)
+				cfg.LogMask = jape.LogTag(logLevel)
 			}
 			cfg.AuthUser = authUser
 			env.Config = cfg
@@ -77,7 +77,7 @@ func main() {
 			os.Exit(2)
 		}
 		log.Printf("Error: %v", err)
-		var jerr *jhttp.Error
+		var jerr *jape.Error
 		if errors.As(err, &jerr) {
 			fmt.Println(string(jerr.Data))
 		}

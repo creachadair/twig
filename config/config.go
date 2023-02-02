@@ -10,9 +10,9 @@ import (
 	"strings"
 
 	"github.com/creachadair/atomicfile"
-	"github.com/creachadair/jhttp"
-	"github.com/creachadair/jhttp/auth"
 	"github.com/creachadair/twitter"
+	"github.com/creachadair/twitter/jape"
+	"github.com/creachadair/twitter/jape/auth"
 	yaml "gopkg.in/yaml.v3"
 )
 
@@ -29,9 +29,9 @@ type Config struct {
 
 	// Non-persistent fields.
 	filePath string
-	AuthUser string                             `yaml:"-"`
-	Log      func(tag jhttp.LogTag, msg string) `yaml:"-"`
-	LogMask  jhttp.LogTag                       `yaml:"-"`
+	AuthUser string                            `yaml:"-"`
+	Log      func(tag jape.LogTag, msg string) `yaml:"-"`
+	LogMask  jape.LogTag                       `yaml:"-"`
 }
 
 // User carries an access token for an individual user.
@@ -54,8 +54,8 @@ func (c *Config) NewBearerClient() (*twitter.Client, error) {
 	if c.BearerToken == "" {
 		return nil, errors.New("no bearer token is available")
 	}
-	return twitter.NewClient(&jhttp.Client{
-		Authorize: jhttp.BearerTokenAuthorizer(c.BearerToken),
+	return twitter.NewClient(&jape.Client{
+		Authorize: jape.BearerTokenAuthorizer(c.BearerToken),
 		Log:       c.Log,
 		LogMask:   c.LogMask,
 	}), nil
@@ -69,7 +69,7 @@ func (c *Config) NewUserClient(user string) (*twitter.Client, error) {
 		return nil, fmt.Errorf("no access token found for user %q", user)
 	}
 	cfg := auth.Config{APIKey: c.APIKey, APISecret: c.APISecret}
-	return twitter.NewClient(&jhttp.Client{
+	return twitter.NewClient(&jape.Client{
 		Authorize: cfg.Authorizer(u.Token, u.Secret),
 		Log:       c.Log,
 		LogMask:   c.LogMask,
