@@ -2,8 +2,8 @@ github.com/creachadair/atomicfile v0.3.0 h1:4HvescJCWkiLOqHkhtCeNAY4+8DVyYkQgwBD
 github.com/creachadair/atomicfile v0.3.0/go.mod h1:mwfrkRxFKwpNAflYZzytbSwxvbK6fdGRRlp0KEQc0qU=
 github.com/creachadair/command v0.0.0-20230321183317-e4e984c4ab3c h1:SI1L+K8Sz4CeYGgAUJjFBYA1hVOttZMYCqBVwkJc/pk=
 github.com/creachadair/command v0.0.0-20230321183317-e4e984c4ab3c/go.mod h1:E4rDY2agq/HFjdmeTqf3kP8ubiq7DZHC4dTjQA2LcB8=
-github.com/creachadair/twitter v0.0.0-20230321182818-6145cbf86577 h1:58VuuF7439NQVYJ9Sp699jsYku3qjciP5DWK6HEDJSU=
-github.com/creachadair/twitter v0.0.0-20230321182818-6145cbf86577/go.mod h1:KtcgUl9tB/LWZHGnxGNN2R+tKaiaIMMMnZzR5jsdBuw=
+github.com/creachadair/twitter v0.0.0-20230418151642-f25c04a378b6 h1:5T5TXHBVRX18niqI+RgDW8CS2gKxn/rBuqkC9iwRugQ=
+github.com/creachadair/twitter v0.0.0-20230418151642-f25c04a378b6/go.mod h1:KtcgUl9tB/LWZHGnxGNN2R+tKaiaIMMMnZzR5jsdBuw=
 github.com/dnaeon/go-vcr/v2 v2.1.0 h1:NkCWj50N8LuufDhJBluOdIAqWlHuBx4o5Yr7lFzWvgM=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
